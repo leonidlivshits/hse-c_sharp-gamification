@@ -1,10 +1,10 @@
 """
 app/models/user.py
-DESCRIPTION: SQLAlchemy model for users (simple fields for demo).
-TODO: Extend with indexes, constraints and relationships.
+DESCRIPTION: SQLAlchemy model for users (keeps parity with migration 0001_initial).
 """
-from sqlalchemy import Column, Integer, String, DateTime, func
+from sqlalchemy import Column, Integer, String, DateTime, func, text
 from app.db.session import Base
+
 
 class User(Base):
     __tablename__ = "users"
