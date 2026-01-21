@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Materials.css';
 
 const Materials = () => {
@@ -74,9 +75,11 @@ const Materials = () => {
         {materials.map((material) => (
           <div key={material.id} className="material-card">
             <div className="material-header">
-              <h2 className="material-title">{material.title}</h2>
+              <Link to={`/materials/${material.id}`} className="material-title-link">
+                <h2 className="material-title">{material.title}</h2>
+              </Link>
               <span className="material-date">
-                 {formatDate(material.publicationDate)}
+                {formatDate(material.publicationDate)}
               </span>
             </div>
             
@@ -92,6 +95,7 @@ const Materials = () => {
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="doc-link"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     Документация
                   </a>
@@ -102,13 +106,14 @@ const Materials = () => {
                     <h4>Связанные тесты:</h4>
                     <div className="tests-list">
                       {material.relatedTests.map((test) => (
-                        <a 
+                        <Link 
                           key={test.id} 
-                          href={`/tests#test-${test.id}`}
+                          to={`/tests`}
                           className="test-link"
+                          onClick={(e) => e.stopPropagation()}
                         >
                           {test.name}
-                        </a>
+                        </Link>
                       ))}
                     </div>
                   </div>
