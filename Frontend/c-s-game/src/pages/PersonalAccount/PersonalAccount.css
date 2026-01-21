@@ -1,5 +1,5 @@
 .personal-account-page {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -25,9 +25,19 @@
 }
 
 .account-content {
-  display: flex;
-  flex-direction: column;
+  margin-top: 30px;
+}
+
+.main-content-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
   gap: 30px;
+}
+
+@media (max-width: 992px) {
+  .main-content-wrapper {
+    grid-template-columns: 1fr;
+  }
 }
 
 .user-info-card {
@@ -220,10 +230,9 @@
   gap: 15px;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 25px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 2px solid #f0f0f0;
 }
 
 .action-btn {
@@ -270,6 +279,108 @@
   transform: translateY(-2px);
 }
 
+.analytics-sidebar {
+  position: relative;
+}
+
+.analytics-link {
+  text-decoration: none;
+  display: block;
+}
+
+.analytics-preview-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 30px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.analytics-preview-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(102, 126, 234, 0.3);
+}
+
+.analytics-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.analytics-preview-header h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.analytics-arrow {
+  font-size: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.analytics-preview-card:hover .analytics-arrow {
+  transform: translateX(5px);
+}
+
+.analytics-preview-text {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.analytics-stats-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.preview-stat {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 15px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+}
+
+.preview-stat-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.preview-stat-label {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.view-analytics-btn {
+  background: white;
+  color: #667eea;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  width: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.analytics-preview-card:hover .view-analytics-btn {
+  background: #f0f0f0;
+}
+
 @media (max-width: 768px) {
   .personal-account-page {
     padding: 10px;
@@ -301,6 +412,10 @@
   .action-btn {
     width: 100%;
     justify-content: center;
+  }
+  
+  .analytics-stats-preview {
+    grid-template-columns: 1fr;
   }
 }
 

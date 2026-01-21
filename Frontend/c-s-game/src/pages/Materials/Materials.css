@@ -270,3 +270,14 @@
     max-height: 180px;
   }
 }
+
+.material-title-link {
+  text-decoration: none;
+  color: inherit;
+  flex: 1;
+}
+
+.material-title-link:hover .material-title {
+  color: #667eea;
+  text-decoration: underline;
+}
