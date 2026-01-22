@@ -1,3 +1,4 @@
+# app/api/deps.py
 """
 app/api/deps.py
 DESCRIPTION: dependency utilities (DB session) for FastAPI.
