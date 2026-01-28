@@ -8,6 +8,7 @@ import PersonalAccount from "../pages/PersonalAccount/PersonalAccount";
 import NoPage from "../pages/NoPage/NoPage";
 import MaterialDetails from "../pages/Materials/MaterialsDetails";
 import Analytics from "../pages/PersonalAccount/Analytics";
+import TestDetails from "../pages/Tests/TestDetails";
 
 import {
     MAIN_ROUTE,
@@ -16,7 +17,8 @@ import {
     PERSONAL_ACCOUNT_ROUTE,
     NO_PAGE_ROUTE,
     MATERIAL_DETAILS_ROUTE,
-    ANALYTICS_ROUTE
+    ANALYTICS_ROUTE,
+    TEST_DETAILS_ROUTE
 } from "./const.js";
 
 const AppRouter = () => {
@@ -29,6 +31,7 @@ const AppRouter = () => {
       <Route path={NO_PAGE_ROUTE} element={<NoPage />} />
       <Route path={MATERIAL_DETAILS_ROUTE} element={<MaterialDetails />} />
       <Route path={ANALYTICS_ROUTE} element={<Analytics />} />
+      <Route path={TEST_DETAILS_ROUTE} element={<TestDetails />} />
       <Route path="*" element={<Navigate to={NO_PAGE_ROUTE} />} />
     </Routes>
   );
