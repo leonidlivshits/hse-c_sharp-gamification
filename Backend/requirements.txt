@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlalchemy
+asyncpg
+pydantic
+pydantic-settings
+redis
+alembic
+pytest
+pytest-asyncio
+httpx
+passlib
+python-jose

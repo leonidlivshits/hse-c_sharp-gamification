@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    env_file:
+      - .env
+    ports:
+      - "6379:6379"
+
+  app:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    env_file:
+      - .env
+    environment:
+      # application will build DATABASE_URL from POSTGRES_* if DATABASE_URL not explicitly set
+      # but we still set DATABASE_URL here for convenience using interpolation
+      DATABASE_URL: "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-postgres}:${POSTGRES_PORT}/${POSTGRES_DB}"
+      REDIS_URL: "${REDIS_URL}"
+      APP_ENV: "${APP_ENV}"
+      SECRET_KEY: "${SECRET_KEY}"
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "${APP_PORT}:8000"
+    volumes:
+      - ./:/app
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/app.Dockerfile
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST:-postgres}:${POSTGRES_PORT}/${POSTGRES_DB}"
+      REDIS_URL: "${REDIS_URL}"
+    depends_on:
+      - redis
+      - postgres
+    command: ["python", "-u", "-m", "app.tasks.worker"]
+
+volumes:
+  pgdata:
