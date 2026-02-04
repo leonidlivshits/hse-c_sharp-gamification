@@ -1,53 +1,64 @@
-"""
-Simple background worker that polls Redis list 'grading:open' for open answers.
-When an open-answer job arrives, it currently logs it and leaves the answer for manual grading.
-Extend to send notifications / assign to teachers.
-Run via docker-compose worker service (already configured).
-"""
 import asyncio
 import json
 import logging
+from typing import Optional
+
 from app.cache.redis_cache import get_redis_client
 from app.db.session import AsyncSessionLocal
-from sqlalchemy import select
 from app.models.answer import Answer
 
 logger = logging.getLogger("worker")
 
-async def process_job(job_payload: str):
-    data = json.loads(job_payload)
+
+async def process_job(job_payload: str) -> None:
+    try:
+        data = json.loads(job_payload)
+    except Exception:
+        logger.exception("Invalid job payload (not json): %s", job_payload)
+        return
+
     answer_id = data.get("answer_id")
     user_id = data.get("user_id")
     logger.info("Open answer queued for manual grading: answer_id=%s user_id=%s", answer_id, user_id)
 
-    # Example: mark DB record as 'needs_review' by setting score = NULL and maybe a flag (if present).
-    # We don't change schema here; instead, we can insert a placeholder in another table or send notification.
-    # For demo: just ensure record exists.
-    async with AsyncSessionLocal() as session:
-        ans = await session.get(Answer, answer_id)
-        if ans:
-            logger.info("Found answer %s, leaving for manual grading", answer_id)
-        else:
-            logger.warning("Answer %s not found", answer_id)
+    if answer_id is None:
+        logger.warning("Job missing answer_id: %s", data)
+        return
 
-async def run_worker():
+    # ensure record exists (do not modify schema here)
+    async with AsyncSessionLocal() as session:
+        ans: Optional[Answer] = await session.get(Answer, answer_id)
+        if ans:
+            logger.info("Found answer %s for manual grading (user_id=%s)", answer_id, ans.user_id)
+        else:
+            logger.warning("Answer %s not found in DB", answer_id)
+
+
+async def run_worker() -> None:
     r = get_redis_client()
     logger.info("Worker started: polling grading:open")
     while True:
         try:
+            # BLPOP returns tuple (key, value) or None
             item = await r.blpop("grading:open", timeout=5)
             if not item:
-                await asyncio.sleep(0.2)
+                # timeout - loop again (allows graceful shutdown)
+                await asyncio.sleep(0.1)
                 continue
-            # item is (key, value)
             _, payload = item
             await process_job(payload)
-        except Exception as e:
-            logger.exception("Worker error: %s", e)
-            await asyncio.sleep(1)  # backoff
+        except asyncio.CancelledError:
+            logger.info("Worker cancelled, exiting")
+            break
+        except Exception:
+            logger.exception("Worker loop error, sleeping briefly")
+            await asyncio.sleep(1)
+
 
 if __name__ == "__main__":
-    # Simple bootstrap when run as module (docker-compose runs python -m app.tasks.worker)
-    import logging, sys
+    import sys
     logging.basicConfig(stream=sys.stdout, level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
-    asyncio.run(run_worker())
+    try:
+        asyncio.run(run_worker())
+    except KeyboardInterrupt:
+        logger.info("Worker stopped by KeyboardInterrupt")

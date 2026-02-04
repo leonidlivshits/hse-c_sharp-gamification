@@ -1,15 +1,11 @@
-"""
-Redis cache helpers: get/set/delete, get_or_set decorator, and distributed lock util.
-Uses redis.asyncio client.
-"""
 import json
 import asyncio
-from typing import Any, Callable, Coroutine
+from typing import Any, Callable, Coroutine, Optional
 import redis.asyncio as aioredis
 from contextlib import asynccontextmanager
 from app.core.config import settings
 
-_redis: aioredis.Redis | None = None
+_redis: Optional[aioredis.Redis] = None
 
 def get_redis_client() -> aioredis.Redis:
     global _redis
@@ -18,16 +14,22 @@ def get_redis_client() -> aioredis.Redis:
     return _redis
 
 async def initialize():
-    get_redis_client()
-    # connection happens lazily
+    r = get_redis_client()
+    try:
+        await r.ping()
+    except Exception:
+        # connection lazy; just ignore here
+        pass
 
 async def close():
     global _redis
     if _redis is not None:
-        await _redis.close()
-        _redis = None
+        try:
+            await _redis.close()
+        finally:
+            _redis = None
 
-async def get(key: str):
+async def get(key: str) -> Any:
     r = get_redis_client()
     data = await r.get(key)
     if data is None:
@@ -37,7 +39,7 @@ async def get(key: str):
     except Exception:
         return data
 
-async def set(key: str, value: Any, ttl: int | None = None):
+async def set(key: str, value: Any, ttl: Optional[int] = None) -> None:
     r = get_redis_client()
     data = json.dumps(value)
     if ttl:
@@ -45,36 +47,39 @@ async def set(key: str, value: Any, ttl: int | None = None):
     else:
         await r.set(key, data)
 
-async def delete(*keys: str):
-    r = get_redis_client()
+async def delete(*keys: str) -> None:
     if not keys:
         return
+    r = get_redis_client()
     await r.delete(*keys)
 
-async def delete_pattern(pattern: str):
+async def delete_pattern(pattern: str) -> None:
+    """
+    Delete keys matching pattern. Uses SCAN to avoid blocking.
+    """
     r = get_redis_client()
-    cur = "0"
+    cur = 0
     keys = []
     while True:
-        cur, found = await r.scan(cur, match=pattern, count=100)
+        cur, found = await r.scan(cur, match=pattern, count=500)
         if found:
             keys.extend(found)
-        if cur == "0":
+        if cur == 0 or cur == "0":
             break
     if keys:
-        await r.delete(*keys)
+        # chunk deletes by 500 to be safe
+        chunk_size = 500
+        for i in range(0, len(keys), chunk_size):
+            await r.delete(*keys[i:i+chunk_size])
 
-def cache_key_leaderboard(prefix: str = "leaderboard:top", n: int = 100):
+def cache_key_leaderboard(prefix: str = "leaderboard:top", n: int = 100) -> str:
     return f"{prefix}:{n}"
 
-def cache_key_test_summary(test_id: int):
+def cache_key_test_summary(test_id: int) -> str:
     return f"test:{test_id}:summary"
 
 @asynccontextmanager
 async def redis_lock(name: str, timeout: int = 10):
-    """
-    Simple lock context using redis.SETNX via redis.lock
-    """
     r = get_redis_client()
     lock = r.lock(name, timeout=timeout)
     locked = await lock.acquire(blocking=True, blocking_timeout=5)
@@ -82,16 +87,16 @@ async def redis_lock(name: str, timeout: int = 10):
         yield locked
     finally:
         if locked:
-            await lock.release()
+            try:
+                await lock.release()
+            except Exception:
+                pass
 
 async def get_or_set(key: str, ttl: int, fn: Callable[[], Coroutine[Any, Any, Any]]):
-    """
-    Get cached value or compute via async fn and set it.
-    """
     val = await get(key)
     if val is not None:
         return val
-    # compute
     data = await fn()
+    # set even if data is None (optional choice)
     await set(key, data, ttl=ttl)
     return data

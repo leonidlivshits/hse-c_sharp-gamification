@@ -1,6 +1,6 @@
 from sqlalchemy import func, select
-from Backend.app.models.answer import Answer
-from Backend.app.models.question import Question
+from app.models.answer import Answer
+from app.models.question import Question
 from app.models.test_ import Test
 
 async def get_test(session, test_id: int):
