@@ -38,7 +38,7 @@
 }
 
 .analytics-header h1 {
-  font-size: 2.5rem;
+  font-size: 2.2rem;
   color: #333;
   margin-bottom: 10px;
   font-weight: 700;
@@ -46,14 +46,14 @@
 
 .analytics-subtitle {
   color: #666;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin-top: 0;
 }
 
 .analytics-tabs {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 15px;
   margin-bottom: 40px;
   border-bottom: 2px solid #f0f0f0;
   padding-bottom: 15px;
@@ -92,69 +92,71 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  gap: 25px;
   margin-bottom: 50px;
 }
 
 .stat-card {
   background: #f8f9ff;
   border-radius: 16px;
-  padding: 30px;
-  border: 2px solid #e0e7ff;
+  padding: 25px;
+  border: 1px solid #e0e7ff;
   transition: all 0.3s ease;
 }
 
 .stat-card:hover {
   border-color: #667eea;
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
 }
 
 .stat-header {
   display: flex;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 25px;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
 .stat-icon {
-  font-size: 2rem;
+  font-size: 1.8rem;
+  color: #667eea;
 }
 
 .stat-header h3 {
-  font-size: 1.4rem;
+  font-size: 1.2rem;
   color: #333;
   margin: 0;
+  font-weight: 600;
 }
 
 .stat-numbers {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   margin-bottom: 20px;
 }
 
 .stat-current {
-  font-size: 3rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  color: #667eea;
+  color: #333;
 }
 
 .stat-divider {
-  font-size: 2.5rem;
-  color: #999;
+  font-size: 2.2rem;
+  color: #333;
 }
 
 .stat-total {
   font-size: 2.2rem;
-  color: #666;
+  color: #333;
 }
 
 .stat-score {
   font-size: 3rem;
   font-weight: 700;
-  color: #667eea;
+  color: #333;
   text-align: center;
   display: block;
 }
@@ -183,7 +185,7 @@
   transition: width 0.5s ease;
 }
 
-.progress-text {
+/* .progress-text {
   position: absolute;
   top: 0;
   left: 0;
@@ -196,7 +198,7 @@
   font-weight: 600;
   color: white;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-}
+} */
 
 .score-indicator {
   margin-top: 30px;
