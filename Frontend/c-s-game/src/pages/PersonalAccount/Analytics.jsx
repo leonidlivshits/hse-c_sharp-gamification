@@ -39,7 +39,7 @@ const Analytics = () => {
         className="progress-fill" 
         style={{ width: `${percentage}%` }}
       />
-      <span className="progress-text">{percentage}%</span>
+      {/* <span className="progress-text">{percentage}%</span> */}
     </div>
   );
 
@@ -120,9 +120,9 @@ const Analytics = () => {
                   />
                 </div>
                 <div className="score-labels">
-                  <span>0</span>
+                  {/* <span>0</span>
                   <span>50</span>
-                  <span>100</span>
+                  <span>100</span> */}
                 </div>
               </div>
             </div>

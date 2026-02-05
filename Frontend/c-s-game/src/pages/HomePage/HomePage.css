@@ -67,7 +67,6 @@
   background: rgba(255, 255, 255, 0.25);
 }
 
-/* Пустые иконки */
 .stat-icon {
   width: 60px;
   height: 60px;
@@ -100,7 +99,6 @@
   margin-top: 5px;
 }
 
-/* Стрик */
 .streak-section {
   background: white;
   border-radius: 20px;
@@ -170,7 +168,6 @@
   border-left: 4px solid #ff6b6b;
 }
 
-/* Навигация по вкладкам */
 .tabs-navigation {
   display: flex;
   gap: 10px;
@@ -209,7 +206,6 @@
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-/* Роадмап */
 .roadmap-section {
   background: white;
   border-radius: 20px;
@@ -400,7 +396,11 @@
   margin-top: 20px;
 }
 
-.action-btn {
+.continue-btn,
+.review-btn,
+.start-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
   padding: 12px 24px;
   border-radius: 8px;
   font-size: 1rem;
@@ -410,38 +410,42 @@
   border: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   text-decoration: none;
+  min-width: 180px;
+  text-align: center;
 }
 
-.continue-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.start-btn {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #999 0%, #666 100%);
 }
 
-.continue-btn:hover {
+.continue-btn:hover,
+.review-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
 }
 
-.review-btn {
-  background: #f0f4ff;
-  color: #667eea;
-  border: 2px solid #667eea;
+.continue-btn {
+  max-width: 92%;
+  width: 100%;
 }
 
-.review-btn:hover {
-  background: #667eea;
+.review-btn {
+  max-width: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
-.start-btn {
-  background: #f5f5f5;
-  color: #8c8c8c;
-  cursor: not-allowed;
+.review-btn:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
 }
 
-/* Дедлайны */
 .deadlines-section {
   background: white;
   border-radius: 20px;
@@ -488,7 +492,7 @@
 .deadline-card {
   background: white;
   border-radius: 15px;
-  padding: 25px;
+  padding: 30px; /* Увеличено с 25px */
   border: 2px solid #f0f0f0;
   transition: all 0.3s ease;
 }
@@ -504,6 +508,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+  padding: 0 10px; /* Добавлено */
 }
 
 .deadline-type {
@@ -554,6 +559,7 @@
   font-size: 1.3rem;
   color: #333;
   margin-bottom: 20px;
+  padding: 0 10px 15px 10px; /* Добавлено */
 }
 
 .deadline-info {
@@ -561,6 +567,7 @@
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 15px;
   margin-bottom: 20px;
+  padding: 0 10px; /* Добавлено */
 }
 
 .info-item {
@@ -592,6 +599,9 @@
 .deadline-actions {
   display: flex;
   gap: 15px;
+  padding: 15px 10px 0 10px; /* Добавлено */
+  margin-top: 15px;
+  border-top: 1px solid #eee;
 }
 
 .primary-btn {
@@ -682,7 +692,6 @@
   border-radius: 50%;
 }
 
-/* Прогресс */
 .progress-section {
   background: white;
   border-radius: 20px;
@@ -915,7 +924,6 @@
   font-size: 0.9rem;
 }
 
-/* Быстрые действия */
 .quick-actions {
   background: white;
   border-radius: 20px;
@@ -1000,7 +1008,6 @@
   justify-content: center;
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .home-page {
     padding: 10px;
@@ -1061,6 +1068,18 @@
   
   .actions-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .deadline-card {
+    padding: 20px !important;
+  }
+  
+  .deadline-header,
+  .deadline-title,
+  .deadline-info,
+  .deadline-actions {
+    padding-left: 5px;
+    padding-right: 5px;
   }
 }
 

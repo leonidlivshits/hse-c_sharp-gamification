@@ -20,7 +20,6 @@ const Home = () => {
       title: "HTML/CSS основы",
       description: "Основы верстки и стилизации",
       status: "completed",
-      progress: 100,
       deadline: "2024-02-28",
       tests: 3,
       materials: 5
@@ -30,7 +29,6 @@ const Home = () => {
       title: "JavaScript ES6+",
       description: "Современный JavaScript",
       status: "completed",
-      progress: 100,
       deadline: "2024-03-05",
       tests: 4,
       materials: 8
@@ -40,7 +38,6 @@ const Home = () => {
       title: "React.js основы",
       description: "Библиотека для создания UI",
       status: "in_progress",
-      progress: 65,
       deadline: "2024-03-15",
       tests: 5,
       materials: 10
@@ -50,7 +47,6 @@ const Home = () => {
       title: "React Router & State",
       description: "Навигация и управление состоянием",
       status: "in_progress",
-      progress: 30,
       deadline: "2024-03-25",
       tests: 4,
       materials: 7
@@ -60,7 +56,6 @@ const Home = () => {
       title: "Node.js & Express",
       description: "Серверный JavaScript",
       status: "pending",
-      progress: 0,
       deadline: "2024-04-10",
       tests: 6,
       materials: 12
@@ -70,7 +65,6 @@ const Home = () => {
       title: "Базы данных (SQL/NoSQL)",
       description: "Работа с данными",
       status: "pending",
-      progress: 0,
       deadline: "2024-04-25",
       tests: 5,
       materials: 9
@@ -80,7 +74,6 @@ const Home = () => {
       title: "Deploy & DevOps основы",
       description: "Развертывание приложений",
       status: "pending",
-      progress: 0,
       deadline: "2024-05-10",
       tests: 3,
       materials: 6
@@ -166,24 +159,6 @@ const Home = () => {
     }
   };
 
-  const getStatusIcon = (status) => {
-    switch(status) {
-      case 'completed': return '✅';
-      case 'in_progress': return '🔄';
-      case 'pending': return '⏳';
-      default: return '';
-    }
-  };
-
-  const getTypeIcon = (type) => {
-    switch(type) {
-      case 'test': return '📝';
-      case 'practice': return '💻';
-      case 'project': return '🏗️';
-      default: return '';
-    }
-  };
-
   return (
     <div className="home-page">
       <div className="welcome-section">
@@ -249,7 +224,7 @@ const Home = () => {
           className={`tab-btn ${activeTab === 'roadmap' ? 'active' : ''}`}
           onClick={() => setActiveTab('roadmap')}
         >
-          Роадмап
+          Дорожная карта
         </button>
         <button 
           className={`tab-btn ${activeTab === 'deadlines' ? 'active' : ''}`}
@@ -265,7 +240,6 @@ const Home = () => {
         </button>
       </div>
 
-      {/* Контент вкладок */}
       <div className="tab-content">
         {activeTab === 'roadmap' && (
           <div className="roadmap-section">
@@ -274,7 +248,6 @@ const Home = () => {
               {roadmap.map((item, index) => (
                 <div key={item.id} className={`roadmap-item ${item.status}`}>
                   <div className="roadmap-marker">
-                    <div className="marker-icon">{getStatusIcon(item.status)}</div>
                     {index < roadmap.length - 1 && <div className="timeline-line"></div>}
                   </div>
                   
@@ -310,10 +283,9 @@ const Home = () => {
                       <div className="progress-bar">
                         <div 
                           className="progress-fill" 
-                          style={{ width: `${item.progress}%` }}
+                          style={{ width: `${item.progress}` }}
                         ></div>
                       </div>
-                      <span className="progress-text">{item.progress}%</span>
                     </div>
                     
                     <div className="roadmap-actions">
@@ -354,7 +326,6 @@ const Home = () => {
                 <div key={item.id} className="deadline-card">
                   <div className="deadline-header">
                     <div className="deadline-type">
-                      <span className="type-icon">{getTypeIcon(item.type)}</span>
                       <span className="type-name">
                         {item.type === 'test' ? 'Тест' : 
                          item.type === 'practice' ? 'Задание' : 'Проект'}
@@ -515,7 +486,7 @@ const Home = () => {
             </div>
             
             <div className="achievements">
-              <h3>🏆 Достижения</h3>
+              <h3>Достижения</h3>
               <div className="achievements-grid">
                 <div className="achievement earned">
                   <div className="achievement-info">
@@ -550,7 +521,6 @@ const Home = () => {
         )}
       </div>
 
-      {/* Быстрые действия */}
       <div className="quick-actions">
         <h2 className="section-title">Быстрые действия</h2>
         <div className="actions-grid">
