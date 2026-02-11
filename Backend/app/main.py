@@ -15,8 +15,7 @@ from sqlalchemy.exc import OperationalError
 
 from app.core.config import settings
 from app.health.endpoints import router as health_router
-from app.api.v1.routers import users, materials, tests
-from app.api.v1.routers import answers
+from app.api.v1.routers import users, materials, tests, answers, choices, levels, questions, analytics
 from app.db.session import engine, Base
 from app.cache.redis_client import redis_client
 logger = logging.getLogger(__name__)
@@ -30,6 +29,10 @@ def create_app() -> FastAPI:
     app.include_router(materials.router, prefix="/api/v1/materials", tags=["materials"])
     app.include_router(tests.router, prefix="/api/v1/tests", tags=["tests"])
     app.include_router(answers.router, prefix="/api/v1/answers", tags=["answers"])
+    app.include_router(choices.router, prefix="/api/v1/choices", tags=["choices"])
+    app.include_router(levels.router, prefix="/api/v1/levels", tags=["levels"])
+    app.include_router(questions.router, prefix="/api/v1/questions", tags=["questions"])
+    app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
 
 
     @app.on_event("startup")
