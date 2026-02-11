@@ -1,0 +1,13 @@
+services:
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "3002:3002"   
+    environment:
+      - PORT=3002       
+      - CHOKIDAR_USEPOLLING=true
+    volumes:
+      - .:/app
+      - /app/node_modules

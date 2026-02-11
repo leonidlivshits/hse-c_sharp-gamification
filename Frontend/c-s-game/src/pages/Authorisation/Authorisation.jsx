@@ -167,17 +167,6 @@ const Auth = () => {
           </button>
         </form>
 
-        <div className="auth-divider">
-          <span>или</span>
-        </div>
-
-        <button className="social-button google">
-          Продолжить с Google
-        </button>
-        <button className="social-button github">
-          Продолжить с GitHub
-        </button>
-
         <div className="auth-switch">
           <p>
             {isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}

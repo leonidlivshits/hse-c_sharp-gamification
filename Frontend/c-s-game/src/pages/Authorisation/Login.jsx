@@ -142,17 +142,6 @@ const Login = () => {
           </button>
         </form>
 
-        <div className="auth-divider">
-          <span>или</span>
-        </div>
-
-        <button className="social-button google">
-          Войти через Google
-        </button>
-        <button className="social-button github">
-          Войти через GitHub
-        </button>
-
         <div className="auth-switch">
           <p>
             Нет аккаунта?{' '}

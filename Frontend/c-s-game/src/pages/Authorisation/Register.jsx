@@ -189,17 +189,6 @@ const Register = () => {
           </button>
         </form>
 
-        <div className="auth-divider">
-          <span>или</span>
-        </div>
-
-        <button className="social-button google">
-          Зарегистрироваться через Google
-        </button>
-        <button className="social-button github">
-          Зарегистрироваться через GitHub
-        </button>
-
         <div className="auth-switch">
           <p>
             Уже есть аккаунт?{' '}
