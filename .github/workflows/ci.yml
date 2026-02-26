@@ -25,38 +25,59 @@ jobs:
       - name: Ensure Docker Compose is available
         run: docker compose version
 
-      # - name: Create .env file if missing
-      #   run: cp .env.example .env 2>/dev/null || true
+      - name: Create .env file if missing
+        working-directory: ./Backend
+        run: |
+          if [ ! -f .env ]; then
+            if [ -f .env.example ]; then
+              cp .env.example .env
+              echo "Created .env from .env.example"
+            else
+              echo "POSTGRES_USER=postgres" > .env
+              echo "POSTGRES_PASSWORD=postgres" >> .env
+              echo "POSTGRES_DB=app_db" >> .env
+              echo "POSTGRES_HOST=postgres" >> .env
+              echo "POSTGRES_PORT=5432" >> .env
+              echo "REDIS_URL=redis://redis:6379/0" >> .env
+              echo "Created minimal .env"
+            fi
+          fi
 
       - name: Build docker images
+        working-directory: ./Backend
         run: docker compose build --parallel
 
       - name: Start services (detached)
+        working-directory: ./Backend
         run: docker compose up -d
 
       - name: Wait for app container to be ready
+        working-directory: ./Backend
         run: |
           echo "Waiting for app to be healthy..."
           timeout 60s sh -c 'until docker compose ps app --format json | jq -e ".Health == \"healthy\""; do sleep 2; done'
         continue-on-error: true
 
       - name: Create test results directory
+        working-directory: ./Backend
         run: mkdir -p test-results
 
       - name: Run tests inside app container
+        working-directory: ./Backend
         run: |
           docker compose run --rm \
             -v "$(pwd)/test-results:/app/test-results" \
             app pytest -q --junitxml=/app/test-results/junit.xml
         continue-on-error: false
 
+      - name: Shut down services
+        if: always()
+        working-directory: ./Backend
+        run: docker compose down
+
       - name: Upload junit report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: junit-report
-          path: ./test-results/junit.xml
-
-      - name: Shut down services
-        if: always()
-        run: docker compose down
+          path: ./Backend/test-results/junit.xml
