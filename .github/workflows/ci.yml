@@ -9,7 +9,6 @@ on:
 permissions:
   contents: read
 
-
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -23,26 +22,41 @@ jobs:
       - name: Show repo files (debug)
         run: ls -la
 
-
       - name: Ensure Docker Compose is available
         run: docker compose version
 
+      # - name: Create .env file if missing
+      #   run: cp .env.example .env 2>/dev/null || true
+
       - name: Build docker images
-        run: docker compose --env-file .env build --parallel
+        run: docker compose build --parallel
 
       - name: Start services (detached)
-        run: docker compose --env-file .env up -d
+        run: docker compose up -d
 
-      - name: Wait for containers to be healthy (simple sleep)
-        run: sleep 5
+      - name: Wait for app container to be ready
+        run: |
+          echo "Waiting for app to be healthy..."
+          timeout 60s sh -c 'until docker compose ps app --format json | jq -e ".Health == \"healthy\""; do sleep 2; done'
+        continue-on-error: true
+
+      - name: Create test results directory
+        run: mkdir -p test-results
 
       - name: Run tests inside app container
         run: |
-          docker compose --env-file .env run --rm app pytest -q --junitxml=./junit.xml
+          docker compose run --rm \
+            -v "$(pwd)/test-results:/app/test-results" \
+            app pytest -q --junitxml=/app/test-results/junit.xml
         continue-on-error: false
 
-      - name: Upload junit report (if present)
+      - name: Upload junit report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: junit-report
-          path: ./junit.xml
+          path: ./test-results/junit.xml
+
+      - name: Shut down services
+        if: always()
+        run: docker compose down
