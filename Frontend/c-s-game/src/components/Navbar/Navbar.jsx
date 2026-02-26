@@ -4,7 +4,7 @@ import {
   MAIN_ROUTE,
   MATERIALS_ROUTE,
   TESTS_ROUTE,
-  PERSONAL_ACCOUNT_ROUTE
+  PERSONAL_ACCOUNT_ROUTE,
 } from '../../routing/const';
 import './Navbar.css';
 
@@ -13,10 +13,10 @@ const Navbar = () => {
   const location = useLocation();
 
   const NAV_ITEMS = [
-    { path: MAIN_ROUTE, label: 'Главная'},
-    { path: MATERIALS_ROUTE, label: 'Материалы'},
-    { path: TESTS_ROUTE, label: 'Тесты'},
-    { path: PERSONAL_ACCOUNT_ROUTE, label: 'Личный кабинет'},
+    { path: MAIN_ROUTE, label: 'Главная' },
+    { path: MATERIALS_ROUTE, label: 'Материалы' },
+    { path: TESTS_ROUTE, label: 'Тесты' },
+    { path: PERSONAL_ACCOUNT_ROUTE, label: 'Личный кабинет' },
   ];
 
   const toggleMenu = () => {
@@ -34,11 +34,11 @@ const Navbar = () => {
           <div className="bank-logo">Т</div>
           <span>Т-Образование</span>
         </NavLink>
-        
+
         <button className="mobile-menu-btn" onClick={toggleMenu}>
           {isMenuOpen ? '✕' : '☰'}
         </button>
-        
+
         <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
           {NAV_ITEMS.map((item) => (
             <NavLink
@@ -52,7 +52,7 @@ const Navbar = () => {
             </NavLink>
           ))}
         </div>
-        
+
         <div className="nav-user">
           <div className="user-avatar">Д</div>
           <span className="user-name">Дмитрий</span>

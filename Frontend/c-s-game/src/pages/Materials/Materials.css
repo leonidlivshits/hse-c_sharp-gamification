@@ -50,7 +50,7 @@
   line-height: 1.6;
   color: #555;
   max-height: 200px;
-  overflow-y: auto; 
+  overflow-y: auto;
   padding-right: 5px;
 }
 
@@ -220,7 +220,7 @@
     grid-template-columns: 1fr;
     gap: 25px;
   }
-  
+
   .material-card {
     min-height: 300px;
   }
@@ -230,27 +230,27 @@
   .materials-header h1 {
     font-size: 2rem;
   }
-  
+
   .material-header {
     flex-direction: column;
     gap: 10px;
     min-height: auto;
   }
-  
+
   .material-date {
     align-self: flex-start;
     margin-left: 0;
   }
-  
+
   .material-title {
     max-height: none;
     font-size: 1.3rem;
   }
-  
+
   .material-content {
     max-height: 150px;
   }
-  
+
   .materials-stats {
     grid-template-columns: 1fr;
   }
@@ -260,12 +260,12 @@
   .materials-page {
     padding: 10px;
   }
-  
+
   .material-card {
     padding: 20px;
     min-height: 320px;
   }
-  
+
   .material-content {
     max-height: 180px;
   }

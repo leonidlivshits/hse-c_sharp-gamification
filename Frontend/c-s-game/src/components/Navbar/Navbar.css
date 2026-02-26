@@ -108,11 +108,11 @@
   .Navbar {
     padding: 10px 16px;
   }
-  
+
   .mobile-menu-btn {
     display: block;
   }
-  
+
   .nav-links {
     position: fixed;
     top: 64px;
@@ -127,22 +127,22 @@
     opacity: 0;
     transition: all 0.3s ease;
   }
-  
+
   .nav-links.open {
     transform: translateY(0);
     opacity: 1;
   }
-  
+
   .nav-link {
     padding: 15px;
     border-radius: 6px;
     margin-bottom: 5px;
   }
-  
+
   .user-name {
     display: none;
   }
-  
+
   .nav-brand span {
     font-size: 18px;
   }

@@ -7,7 +7,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    rememberMe: false
+    rememberMe: false,
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -15,15 +15,15 @@ const Login = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
-    
+
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: '',
       }));
     }
   };
@@ -49,7 +49,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -57,21 +57,20 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userEmail', formData.email);
       if (formData.rememberMe) {
         localStorage.setItem('rememberMe', 'true');
       }
-      
+
       navigate(MAIN_ROUTE, { replace: true });
-      
     } catch (error) {
       console.error('Ошибка входа:', error);
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        submit: 'Ошибка входа. Проверьте данные и попробуйте снова.'
+        submit: 'Ошибка входа. Проверьте данные и попробуйте снова.',
       }));
     } finally {
       setIsLoading(false);
@@ -133,9 +132,7 @@ const Login = () => {
             </Link>
           </div>
 
-          {errors.submit && (
-            <div className="submit-error">{errors.submit}</div>
-          )}
+          {errors.submit && <div className="submit-error">{errors.submit}</div>}
 
           <button type="submit" className="auth-button" disabled={isLoading}>
             {isLoading ? 'Вход...' : 'Войти'}
@@ -153,8 +150,7 @@ const Login = () => {
 
         <div className="auth-terms">
           <p>
-            Нажимая кнопку, вы соглашаетесь с{' '}
-            <Link to="/terms">Условиями использования</Link>
+            Нажимая кнопку, вы соглашаетесь с <Link to="/terms">Условиями использования</Link>
           </p>
         </div>
       </div>

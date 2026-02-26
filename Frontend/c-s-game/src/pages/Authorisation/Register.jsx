@@ -9,7 +9,7 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    agreeTerms: false
+    agreeTerms: false,
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -17,15 +17,15 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
-    
+
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: '',
       }));
     }
   };
@@ -67,7 +67,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -75,19 +75,18 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userEmail', formData.email);
       localStorage.setItem('userName', formData.name);
-      
+
       navigate(MAIN_ROUTE);
-      
     } catch (error) {
       console.error('Ошибка регистрации:', error);
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        submit: 'Ошибка регистрации. Попробуйте снова.'
+        submit: 'Ошибка регистрации. Попробуйте снова.',
       }));
     } finally {
       setIsLoading(false);
@@ -156,9 +155,7 @@ const Register = () => {
               placeholder="Повторите пароль"
               className={errors.confirmPassword ? 'error' : ''}
             />
-            {errors.confirmPassword && (
-              <span className="error-text">{errors.confirmPassword}</span>
-            )}
+            {errors.confirmPassword && <span className="error-text">{errors.confirmPassword}</span>}
           </div>
 
           <div className="form-group checkbox-group">
@@ -171,18 +168,13 @@ const Register = () => {
               className={errors.agreeTerms ? 'error' : ''}
             />
             <label htmlFor="agreeTerms">
-              Я согласен с{' '}
-              <Link to="/terms">Условиями использования</Link> и{' '}
+              Я согласен с <Link to="/terms">Условиями использования</Link> и{' '}
               <Link to="/privacy">Политикой конфиденциальности</Link>
             </label>
-            {errors.agreeTerms && (
-              <span className="error-text">{errors.agreeTerms}</span>
-            )}
+            {errors.agreeTerms && <span className="error-text">{errors.agreeTerms}</span>}
           </div>
 
-          {errors.submit && (
-            <div className="submit-error">{errors.submit}</div>
-          )}
+          {errors.submit && <div className="submit-error">{errors.submit}</div>}
 
           <button type="submit" className="auth-button" disabled={isLoading}>
             {isLoading ? 'Регистрация...' : 'Зарегистрироваться'}
