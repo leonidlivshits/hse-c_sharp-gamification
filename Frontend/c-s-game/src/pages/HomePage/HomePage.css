@@ -21,7 +21,7 @@
   right: 0;
   width: 300px;
   height: 300px;
-  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
   border-radius: 50%;
   transform: translate(100px, -100px);
 }
@@ -79,7 +79,7 @@
 }
 
 .stat-icon::before {
-  content: "";
+  content: '';
 }
 
 .stat-info {
@@ -522,7 +522,7 @@
 }
 
 .type-icon::before {
-  content: "";
+  content: '';
 }
 
 .type-name {
@@ -583,7 +583,7 @@
 }
 
 .info-label::before {
-  content: "";
+  content: '';
 }
 
 .info-value {
@@ -910,7 +910,7 @@
 }
 
 .achievement-icon::before {
-  content: "";
+  content: '';
 }
 
 .achievement-info h4 {
@@ -970,7 +970,7 @@
 }
 
 .action-icon::before {
-  content: "";
+  content: '';
 }
 
 .action-content {
@@ -1012,68 +1012,68 @@
   .home-page {
     padding: 10px;
   }
-  
+
   .welcome-section {
     padding: 25px;
   }
-  
+
   .welcome-content h1 {
     font-size: 2rem;
   }
-  
+
   .stats-cards {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .stat-card {
     padding: 15px;
   }
-  
+
   .streak-calendar {
     gap: 10px;
   }
-  
+
   .streak-day {
     min-width: 60px;
     padding: 10px;
   }
-  
+
   .tabs-navigation {
     flex-direction: column;
   }
-  
+
   .roadmap-timeline {
     padding-left: 20px;
   }
-  
+
   .roadmap-marker {
     left: -15px;
   }
-  
+
   .roadmap-content {
     margin-left: 20px;
   }
-  
+
   .deadline-actions {
     flex-direction: column;
   }
-  
+
   .calendar-grid {
     grid-template-columns: repeat(7, 1fr);
   }
-  
+
   .calendar-day {
     padding: 8px;
   }
-  
+
   .actions-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .deadline-card {
     padding: 20px !important;
   }
-  
+
   .deadline-header,
   .deadline-title,
   .deadline-info,
@@ -1087,44 +1087,44 @@
   .stats-cards {
     grid-template-columns: 1fr;
   }
-  
+
   .streak-calendar {
     flex-wrap: wrap;
     justify-content: center;
   }
-  
+
   .streak-day {
     min-width: 50px;
   }
-  
+
   .roadmap-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
+
   .progress-overview {
     grid-template-columns: 1fr;
   }
-  
+
   .progress-stat {
     padding: 20px;
   }
-  
+
   .stat-circle {
     width: 80px;
     height: 80px;
   }
-  
+
   .stat-circle span {
     width: 60px;
     height: 60px;
   }
-  
+
   .skills-grid {
     grid-template-columns: 1fr;
   }
-  
+
   .achievements-grid {
     grid-template-columns: 1fr;
   }

@@ -9,7 +9,7 @@ const Auth = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    rememberMe: false
+    rememberMe: false,
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -17,15 +17,15 @@ const Auth = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
-    
+
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: '',
       }));
     }
   };
@@ -59,7 +59,7 @@ const Auth = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -67,18 +67,17 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userEmail', formData.email);
-      
+
       navigate(MAIN_ROUTE);
-      
     } catch (error) {
       console.error('Ошибка авторизации:', error);
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        submit: 'Ошибка авторизации. Проверьте данные и попробуйте снова.'
+        submit: 'Ошибка авторизации. Проверьте данные и попробуйте снова.',
       }));
     } finally {
       setIsLoading(false);
@@ -158,23 +157,17 @@ const Auth = () => {
             </div>
           )}
 
-          {errors.submit && (
-            <div className="submit-error">{errors.submit}</div>
-          )}
+          {errors.submit && <div className="submit-error">{errors.submit}</div>}
 
           <button type="submit" className="auth-button" disabled={isLoading}>
-            {isLoading ? 'Загрузка...' : (isLogin ? 'Войти' : 'Зарегистрироваться')}
+            {isLoading ? 'Загрузка...' : isLogin ? 'Войти' : 'Зарегистрироваться'}
           </button>
         </form>
 
         <div className="auth-switch">
           <p>
             {isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="switch-button"
-            >
+            <button type="button" onClick={() => setIsLogin(!isLogin)} className="switch-button">
               {isLogin ? ' Зарегистрироваться' : ' Войти'}
             </button>
           </p>
@@ -182,8 +175,7 @@ const Auth = () => {
 
         <div className="auth-terms">
           <p>
-            Нажимая кнопку, вы соглашаетесь с{' '}
-            <Link to="/terms">Условиями использования</Link> и{' '}
+            Нажимая кнопку, вы соглашаетесь с <Link to="/terms">Условиями использования</Link> и{' '}
             <Link to="/privacy">Политикой конфиденциальности</Link>
           </p>
         </div>

@@ -4,13 +4,13 @@ import './MaterialsDetails.css';
 
 const MaterialDetails = () => {
   const { id } = useParams();
-  
+
   const materials = [
     {
       id: 1,
-      title: "Введение в React.js",
-      docLink: "https://reactjs.org/docs/getting-started.html",
-      publicationDate: "2024-01-15",
+      title: 'Введение в React.js',
+      docLink: 'https://reactjs.org/docs/getting-started.html',
+      publicationDate: '2024-01-15',
       fullContent: `
         React - это JavaScript-библиотека для создания пользовательских интерфейсов. Она позволяет создавать сложные UI из небольших и изолированных частей кода, называемых «компонентами».
         
@@ -26,17 +26,17 @@ const MaterialDetails = () => {
         React использует виртуальный DOM для оптимизации обновлений интерфейса, что делает приложения быстрыми и отзывчивыми.
       `,
       relatedTests: [
-        { id: 1, name: "Основы React.js" },
-        { id: 2, name: "Компоненты и пропсы" },
-        { id: 3, name: "Состояние и жизненный цикл" },
-        { id: 4, name: "React Hooks" }
-      ]
+        { id: 1, name: 'Основы React.js' },
+        { id: 2, name: 'Компоненты и пропсы' },
+        { id: 3, name: 'Состояние и жизненный цикл' },
+        { id: 4, name: 'React Hooks' },
+      ],
     },
     {
       id: 2,
-      title: "JavaScript: современные возможности ES6+",
-      docLink: "https://developer.mozilla.org/ru/docs/Web/JavaScript",
-      publicationDate: "2024-01-20",
+      title: 'JavaScript: современные возможности ES6+',
+      docLink: 'https://developer.mozilla.org/ru/docs/Web/JavaScript',
+      publicationDate: '2024-01-20',
       fullContent: `
         ES6 (ECMAScript 2015) принес множество новых возможностей в JavaScript, которые сделали язык более выразительным и удобным.
         
@@ -112,16 +112,16 @@ const MaterialDetails = () => {
         \`\`\`
       `,
       relatedTests: [
-        { id: 5, name: "ES6+ Syntax" },
-        { id: 6, name: "Асинхронный JavaScript" },
-        { id: 7, name: "Классы и наследование" }
-      ]
+        { id: 5, name: 'ES6+ Syntax' },
+        { id: 6, name: 'Асинхронный JavaScript' },
+        { id: 7, name: 'Классы и наследование' },
+      ],
     },
     {
       id: 3,
-      title: "Основы CSS Grid и Flexbox",
+      title: 'Основы CSS Grid и Flexbox',
       docLink: null,
-      publicationDate: "2024-02-01",
+      publicationDate: '2024-02-01',
       fullContent: `
         CSS Grid и Flexbox - современные технологии верстки, которые решают задачи создания адаптивных макетов.
         
@@ -177,16 +177,16 @@ const MaterialDetails = () => {
         - **Grid**: когда нужен сложный двумерный макет
       `,
       relatedTests: [
-        { id: 8, name: "CSS Layout" },
-        { id: 9, name: "Адаптивная верстка" },
-        { id: 10, name: "Flexbox vs Grid" }
-      ]
+        { id: 8, name: 'CSS Layout' },
+        { id: 9, name: 'Адаптивная верстка' },
+        { id: 10, name: 'Flexbox vs Grid' },
+      ],
     },
     {
       id: 4,
-      title: "Основы Node.js и Express",
-      docLink: "https://nodejs.org/docs/latest/api/",
-      publicationDate: "2024-02-10",
+      title: 'Основы Node.js и Express',
+      docLink: 'https://nodejs.org/docs/latest/api/',
+      publicationDate: '2024-02-10',
       fullContent: `
         Node.js - среда выполнения JavaScript на стороне сервера, построенная на движке V8. Express - минималистичный веб-фреймворк для Node.js.
         
@@ -258,21 +258,23 @@ const MaterialDetails = () => {
         - DELETE - удаление данных
       `,
       relatedTests: [
-        { id: 11, name: "Node.js основы" },
-        { id: 12, name: "REST API с Express" },
-        { id: 13, name: "Middleware и маршрутизация" }
-      ]
-    }
+        { id: 11, name: 'Node.js основы' },
+        { id: 12, name: 'REST API с Express' },
+        { id: 13, name: 'Middleware и маршрутизация' },
+      ],
+    },
   ];
 
-  const material = materials.find(m => m.id === parseInt(id));
+  const material = materials.find((m) => m.id === parseInt(id));
 
   if (!material) {
     return (
       <div className="material-not-found">
         <h2>Материал не найден</h2>
         <p>Запрошенный материал не существует или был удален.</p>
-        <Link to="/materials" className="back-link">Вернуться к материалам</Link>
+        <Link to="/materials" className="back-link">
+          Вернуться к материалам
+        </Link>
       </div>
     );
   }
@@ -282,7 +284,7 @@ const MaterialDetails = () => {
     return date.toLocaleDateString('ru-RU', {
       day: '2-digit',
       month: '2-digit',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
@@ -296,9 +298,9 @@ const MaterialDetails = () => {
         <div className="material-meta">
           <span className="material-date">{formatDate(material.publicationDate)}</span>
           {material.docLink && (
-            <a 
-              href={material.docLink} 
-              target="_blank" 
+            <a
+              href={material.docLink}
+              target="_blank"
               rel="noopener noreferrer"
               className="doc-link-header"
             >
@@ -367,19 +369,20 @@ const MaterialDetails = () => {
               </div>
               <div className="info-item">
                 <span className="info-label">Документация:</span>
-                <span className="info-value">
-                  {material.docLink ? 'Доступна' : 'Не доступна'}
-                </span>
+                <span className="info-value">{material.docLink ? 'Доступна' : 'Не доступна'}</span>
               </div>
+              <button className="action-btn save-btn save-btn-sidebar">
+                Сохранить для изучения
+              </button>
             </div>
           </div>
 
           {material.docLink && (
             <div className="sidebar-section">
               <h3>Полезные ссылки</h3>
-              <a 
-                href={material.docLink} 
-                target="_blank" 
+              <a
+                href={material.docLink}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="external-link"
               >
@@ -388,18 +391,6 @@ const MaterialDetails = () => {
             </div>
           )}
         </div>
-      </div>
-
-      <div className="material-actions">
-        <button className="action-btn print-btn" onClick={() => window.print()}>
-          Распечатать материал
-        </button>
-        <button className="action-btn save-btn">
-          Сохранить для изучения
-        </button>
-        <Link to="/tests" className="action-btn test-btn">
-          Пройти тесты по теме
-        </Link>
       </div>
     </div>
   );

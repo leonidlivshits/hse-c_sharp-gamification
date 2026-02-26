@@ -456,31 +456,31 @@
   .tests-header h1 {
     font-size: 2rem;
   }
-  
+
   .test-stat-card {
     padding: 20px;
   }
-  
+
   .test-stat-value {
     font-size: 1.8rem;
   }
-  
+
   .test-title {
     font-size: 1.5rem;
   }
-  
+
   .test-stats-details {
     grid-template-columns: 1fr;
   }
-  
+
   .test-actions {
     flex-direction: column;
   }
-  
+
   .action-btn {
     width: 100%;
   }
-  
+
   .info-grid {
     grid-template-columns: 1fr;
   }
@@ -490,27 +490,27 @@
   .tests-page {
     padding: 10px;
   }
-  
+
   .test-card {
     padding: 20px;
     min-height: 350px; /* Уменьшаем минимальную высоту для мобильных */
   }
-  
+
   .test-title-section {
     flex-direction: column;
     align-items: flex-start;
   }
-  
+
   .meta-item {
     flex-direction: column;
     align-items: flex-start;
     gap: 5px;
   }
-  
+
   .meta-label {
     min-width: auto;
   }
-  
+
   .question-types {
     flex-direction: column;
     gap: 10px;

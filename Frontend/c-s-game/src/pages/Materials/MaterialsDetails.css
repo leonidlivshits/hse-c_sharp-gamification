@@ -5,18 +5,18 @@
 }
 
 .material-details-header {
+  position: relative;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 12px;
   padding: 30px;
   color: white;
   margin-bottom: 30px;
-  position: relative;
 }
 
 .back-button {
   position: absolute;
-  top: 20px;
-  left: 20px;
+  top: 20px; /* отступ сверху */
+  left: 30px; /* отступ слева (можно увеличить, если нужно) */
   color: white;
   text-decoration: none;
   padding: 8px 15px;
@@ -24,6 +24,7 @@
   border-radius: 6px;
   font-size: 0.9rem;
   transition: all 0.3s ease;
+  z-index: 10; /* чтобы быть поверх заголовка */
 }
 
 .back-button:hover {
@@ -165,19 +166,24 @@
 
 .tests-list {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 15px;
-   width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px;
+  min-height: fit-content;
+  height: auto;
 }
 
 .test-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 15px;
+  gap: 8px;
+  padding: 8px 12px;
   background: #f8f9ff;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #e0e7ff;
+  font-size: 0.9rem;
 }
 
 .test-bullet {
@@ -190,16 +196,18 @@
   flex: 1;
   font-weight: 500;
   color: #333;
+  font-size: 0.95rem;
 }
 
 .take-test-link {
   color: #667eea;
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  padding: 4px 8px;
+  padding: 3px 6px;
   border-radius: 4px;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .take-test-link:hover {
@@ -216,7 +224,7 @@
 .info-item {
   display: flex;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 10px 15px;
   border-bottom: 1px dashed #eee;
 }
 
@@ -346,34 +354,35 @@
   transform: translateY(-2px);
 }
 
-/* Адаптивность */
 @media (max-width: 768px) {
   .material-details-header h1 {
     font-size: 2rem;
     margin-top: 40px;
   }
-  
+
   .material-meta {
     flex-direction: column;
     gap: 15px;
     align-items: stretch;
   }
-  
-  .material-date, .doc-link-header {
+
+  .material-date,
+  .doc-link-header {
     justify-content: center;
     text-align: center;
   }
-  
+
   .material-actions {
     flex-direction: column;
   }
-  
+
   .action-btn {
     width: 100%;
     justify-content: center;
   }
-  
-  .content-section, .sidebar-section {
+
+  .content-section,
+  .sidebar-section {
     padding: 20px;
   }
 }
@@ -382,23 +391,23 @@
   .material-details-page {
     padding: 10px;
   }
-  
+
   .material-details-header {
     padding: 20px;
   }
-  
+
   .material-details-header h1 {
     font-size: 1.7rem;
   }
-  
+
   .content-section h2 {
     font-size: 1.5rem;
   }
-  
+
   .content-text {
     font-size: 1rem;
   }
-  
+
   .code-block {
     font-size: 0.8rem;
     padding: 10px;

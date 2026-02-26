@@ -11,12 +11,12 @@ const ForgotPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!email) {
       setError('Введите email');
       return;
     }
-    
+
     if (!/\S+@\S+\.\S+/.test(email)) {
       setError('Введите корректный email');
       return;
@@ -26,7 +26,7 @@ const ForgotPassword = () => {
     setError('');
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       setIsSubmitted(true);
     } catch (err) {
       setError('Произошла ошибка. Попробуйте снова.');

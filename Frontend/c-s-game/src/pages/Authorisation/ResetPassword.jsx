@@ -6,7 +6,7 @@ import './Authorisation.css';
 const ResetPassword = () => {
   const [formData, setFormData] = useState({
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -15,15 +15,15 @@ const ResetPassword = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ''
+        [name]: '',
       }));
     }
   };
@@ -49,7 +49,7 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -57,17 +57,16 @@ const ResetPassword = () => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       setIsSuccess(true);
-      
+
       setTimeout(() => {
         navigate(LOGIN_ROUTE);
       }, 3000);
-      
     } catch (error) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        submit: 'Произошла ошибка. Попробуйте снова.'
+        submit: 'Произошла ошибка. Попробуйте снова.',
       }));
     } finally {
       setIsLoading(false);
@@ -115,9 +114,7 @@ const ResetPassword = () => {
                 )}
               </div>
 
-              {errors.submit && (
-                <div className="submit-error">{errors.submit}</div>
-              )}
+              {errors.submit && <div className="submit-error">{errors.submit}</div>}
 
               <button type="submit" className="auth-button" disabled={isLoading}>
                 {isLoading ? 'Сохранение...' : 'Сохранить пароль'}
@@ -129,9 +126,7 @@ const ResetPassword = () => {
             <div className="success-icon">✓</div>
             <h2>Пароль успешно изменен!</h2>
             <p>Теперь вы можете войти в систему с новым паролем</p>
-            <p className="redirect-message">
-              Перенаправление на страницу входа...
-            </p>
+            <p className="redirect-message">Перенаправление на страницу входа...</p>
           </div>
         )}
       </div>
