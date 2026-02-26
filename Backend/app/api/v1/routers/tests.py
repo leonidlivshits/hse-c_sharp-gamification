@@ -53,5 +53,5 @@ async def create_test(payload: dict, db: AsyncSession = Depends(get_db)):
 
 @router.get("/{test_id}/summary", status_code=status.HTTP_200_OK)
 async def test_summary(test_id: int, db: AsyncSession = Depends(get_db)):
-    summary = await test_repo.test_summary(db, test_id)
+    summary = await test_repo.get_test_summary(db, test_id)
     return summary

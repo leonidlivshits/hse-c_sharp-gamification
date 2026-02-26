@@ -6,7 +6,7 @@ Functions:
 - grade_mcq_answer(session, answer_id)
 - get_answers_for_test(session, test_id, limit=100, offset=0)
 """
-from typing import Optional, Tuple
+from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -21,13 +21,8 @@ async def record_answer(session, user_id: int, test_id: int, question_id: int, p
     """
     a = Answer(user_id=user_id, test_id=test_id, question_id=question_id, answer_payload=payload)
     session.add(a)
-    try:
-        await session.commit()
-        await session.refresh(a)
-    except Exception:
-        # rollback to keep session usable for caller
-        await session.rollback()
-        raise
+    await session.flush()
+    await session.refresh(a)
     return a
 
 
@@ -40,11 +35,7 @@ async def grade_mcq_answer(session, answer_id: int) -> Optional[Answer]:
     returns the Answer unchanged (score may remain None).
     """
     # load the answer first
-    try:
-        answer = await session.get(Answer, answer_id)
-    except SQLAlchemyError:
-        return None
-
+    answer = await session.get(Answer, answer_id)
     if not answer:
         return None
 
@@ -66,12 +57,8 @@ async def grade_mcq_answer(session, answer_id: int) -> Optional[Answer]:
         .where(Choice.id == choice_id)
     )
 
-    try:
-        res = await session.execute(stmt)
-        row = res.first()
-    except Exception:
-        # DB error -> do not crash auto-grader; leave for manual grading
-        return answer
+    res = await session.execute(stmt)
+    row = res.first()
 
     if not row:
         # choice not found, can't auto-grade
@@ -79,20 +66,12 @@ async def grade_mcq_answer(session, answer_id: int) -> Optional[Answer]:
 
     choice_obj, question_obj = row
     # compute score
-    try:
-        score = float(question_obj.points) if bool(choice_obj.is_correct) else 0.0
-    except Exception:
-        score = 0.0
+    score = float(question_obj.points) if bool(choice_obj.is_correct) else 0.0
 
     # persist score
     answer.score = score
-    try:
-        await session.commit()
-        await session.refresh(answer)
-    except Exception:
-        await session.rollback()
-        # if commit fails, leave answer as-is (caller can retry)
-        return answer
+    await session.flush()
+    await session.refresh(answer)
 
     return answer
 

@@ -19,11 +19,11 @@ async def list_tests(session, published_only: bool = True, limit: int = 100):
 async def create_test(session, title: str, description: str | None = None, time_limit_minutes: int | None = None, max_score: int | None = None, material_id: int | None = None):
     test = Test(title=title, description=description, time_limit_minutes=time_limit_minutes, max_score=max_score, material_id=material_id)
     session.add(test)
-    await session.commit()
+    await session.flush()
     await session.refresh(test)
     return test
 
-async def test_summary(session, test_id: int):
+async def get_test_summary(session, test_id: int):
     """
     Return summary stats for a test:
     - total_questions

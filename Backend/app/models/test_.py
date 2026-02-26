@@ -4,6 +4,7 @@ from app.db.session import Base
 
 class Test(Base):
     __tablename__ = "tests"
+    __test__ = False 
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(300), nullable=False)

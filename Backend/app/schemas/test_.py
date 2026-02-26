@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 class TestCreate(BaseModel):
+    __test__ = False 
     title: str
     description: str | None = None
     time_limit_minutes: int | None = None
@@ -10,6 +11,7 @@ class TestCreate(BaseModel):
     material_id: int | None = None
 
 class TestRead(BaseModel):
+    __test__ = False 
     id: int
     title: str
     description: str | None

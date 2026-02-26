@@ -1,4 +1,4 @@
-from sqlalchemy import select, insert, update, delete
+from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 from app.models.question import Question
 from app.models.choice import Choice
@@ -15,7 +15,7 @@ async def create_question_with_choices(session, test_id: int, text: str, points:
         for c in choices:
             ch = Choice(question_id=q.id, value=c["value"], ordinal=c.get("ordinal"), is_correct=c.get("is_correct", False))
             session.add(ch)
-    await session.commit()
+    await session.flush()   # вместо commit
     await session.refresh(q)
     return q
 
@@ -30,6 +30,5 @@ async def list_questions_for_test(session, test_id: int, limit: int = 100, offse
     return res.scalars().all()
 
 async def delete_question(session, question_id: int):
-    q = delete(Question).where(Question.id == question_id)
-    await session.execute(q)
-    await session.commit()
+    await session.execute(delete(Question).where(Question.id == question_id))
+    await session.flush()

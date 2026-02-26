@@ -18,6 +18,6 @@ async def list_users(session, limit: int = 100):
 async def create_user(session, username: str, password_hash: str, full_name: str | None = None):
     user = User(username=username, password_hash=password_hash, full_name=full_name)
     session.add(user)
-    await session.commit()
+    await session.flush()
     await session.refresh(user)
     return user

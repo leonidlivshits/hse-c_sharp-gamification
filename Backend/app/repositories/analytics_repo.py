@@ -1,6 +1,5 @@
 from typing import Optional, List, Dict, Any
-from sqlalchemy import select, insert, update, desc, func, text
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import select, func, desc, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.analytics import Analytics
@@ -15,34 +14,38 @@ async def get_analytics_for_user(session: AsyncSession, user_id: int) -> Optiona
     return res.scalars().first()
 
 
-async def create_or_update_analytics(session: AsyncSession, user_id: int, points_delta: float = 0.0, mark_active: bool = False) -> Analytics:
+async def create_or_update_analytics(
+    session: AsyncSession,
+    user_id: int,
+    points_delta: float = 0.0,
+    mark_active: bool = False
+) -> Analytics:
     """
-    Atomic upsert: increment total_points, tests_taken (if points_delta > 0), optionally update last_active.
-    Uses INSERT ... ON CONFLICT DO UPDATE.
+    Универсальный upsert без ON CONFLICT.
     """
-    stmt = insert(Analytics).values(
-        user_id=user_id,
-        total_points=points_delta,
-        tests_taken=1 if points_delta else 0,
-        last_active=func.now()
-    ).on_conflict_do_update(
-        index_elements=["user_id"],
-        set_={
-            "total_points": Analytics.total_points + points_delta,
-            "tests_taken": Analytics.tests_taken + (1 if points_delta else 0),
-            "last_active": func.coalesce(func.nullif(func.cast(mark_active, func.Boolean), None), Analytics.last_active) if mark_active else Analytics.last_active
-        }
-    )
+    # Пытаемся найти существующую запись
+    stmt = select(Analytics).where(Analytics.user_id == user_id)
+    result = await session.execute(stmt)
+    analytics = result.scalar_one_or_none()
 
-    try:
-        await session.execute(stmt)
-        await session.commit()
-    except SQLAlchemyError:
-        await session.rollback()
-        raise
+    if analytics is None:
+        analytics = Analytics(
+            user_id=user_id,
+            total_points=points_delta,
+            tests_taken=1 if points_delta > 0 else 0,
+            last_active=func.now() if mark_active else None
+        )
+        session.add(analytics)
+    else:
+        analytics.total_points += points_delta
+        if points_delta > 0:
+            analytics.tests_taken += 1
+        if mark_active:
+            analytics.last_active = func.now()
 
-    # return fresh row
-    return await get_analytics_for_user(session, user_id)
+    # Flush, но не commit – вызывающий код решит, когда фиксировать
+    await session.flush()
+    return analytics
 
 
 async def get_user_analytics(session: AsyncSession, user_id: int) -> Optional[Analytics]:
@@ -122,7 +125,6 @@ async def average_score_per_test(session: AsyncSession, test_id: int) -> Optiona
 async def daily_active_users(session: AsyncSession, days: int = 7):
     """
     DAU over last N days: returns list of {day, dau}
-    Use parameter binding correctly for interval by building INTERVAL from integer parameter.
     """
     raw = text(
         """

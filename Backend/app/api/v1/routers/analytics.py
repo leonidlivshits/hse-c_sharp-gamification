@@ -16,7 +16,7 @@ async def get_leaderboard(limit: int = 50, offset: int = 0, db: AsyncSession = D
 
 @router.get("/tests/{test_id}/summary", status_code=200)
 async def get_test_summary(test_id: int, db: AsyncSession = Depends(get_db)):
-    summary = await test_repo.test_summary(db, test_id)
+    summary = await test_repo.get_test_summary(db, test_id)
     if summary is None:
         raise HTTPException(status_code=404, detail="Test not found or no data")
     return summary
