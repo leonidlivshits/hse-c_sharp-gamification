@@ -1,40 +1,48 @@
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db
+from app.schemas.material import MaterialCreate, MaterialRead
 from app.repositories import material_repo
 
 router = APIRouter()
 
 
-def _material_to_dict(m):
-    return {
-        "id": getattr(m, "id", None),
-        "title": getattr(m, "title", None),
-        "description": getattr(m, "description", None),
-        "content_url": getattr(m, "content_url", None),
-        "published_at": getattr(m, "published_at", None),
-        "author_id": getattr(m, "author_id", None),
-    }
-
-
-@router.get("/", status_code=status.HTTP_200_OK)
+@router.get("/", response_model=List[MaterialRead], status_code=status.HTTP_200_OK)
 async def list_materials(limit: int = 100, offset: int = 0, db: AsyncSession = Depends(get_db)):
+    """
+    List published materials (or all, depending on repo implementation).
+    """
     items = await material_repo.list_materials(db, limit=limit, offset=offset)
-    return [_material_to_dict(m) for m in items]
+    return items
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
-async def create_material(payload: dict, db: AsyncSession = Depends(get_db)):
-    # payload: {title, description?, content_url?, author_id?}
+@router.get("/{material_id}", response_model=MaterialRead, status_code=status.HTTP_200_OK)
+async def get_material(material_id: int, db: AsyncSession = Depends(get_db)):
+    """
+    Get a single material by id.
+    """
+    m = await material_repo.get_material(db, material_id)
+    if not m:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Material not found")
+    return m
+
+
+@router.post("/", response_model=MaterialRead, status_code=status.HTTP_201_CREATED)
+async def create_material(payload: MaterialCreate, db: AsyncSession = Depends(get_db)):
+    """
+    Create material. For now no auth check is performed here — consider adding later.
+    """
     try:
-        obj = await material_repo.create_material(
+        m = await material_repo.create_material(
             db,
-            title=payload["title"],
-            description=payload.get("description"),
-            content_url=payload.get("content_url"),
-            author_id=payload.get("author_id"),
+            title=payload.title,
+            description=payload.description,
+            content_url=payload.content_url,
+            author_id=payload.author_id,
         )
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    return _material_to_dict(obj)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    return m
