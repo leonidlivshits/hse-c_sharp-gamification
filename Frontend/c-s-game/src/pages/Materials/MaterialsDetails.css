@@ -15,8 +15,8 @@
 
 .back-button {
   position: absolute;
-  top: 20px; /* отступ сверху */
-  left: 30px; /* отступ слева (можно увеличить, если нужно) */
+  top: 20px;
+  left: 30px;
   color: white;
   text-decoration: none;
   padding: 8px 15px;
@@ -24,7 +24,7 @@
   border-radius: 6px;
   font-size: 0.9rem;
   transition: all 0.3s ease;
-  z-index: 10; /* чтобы быть поверх заголовка */
+  z-index: 10;
 }
 
 .back-button:hover {
@@ -102,7 +102,6 @@
   color: #333;
   margin-bottom: 25px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #f0f0f0;
 }
 
 .content-text {

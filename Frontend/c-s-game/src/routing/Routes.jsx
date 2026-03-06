@@ -14,6 +14,8 @@ import Login from '../pages/Authorisation/Login';
 import Register from '../pages/Authorisation/Register';
 import ForgotPassword from '../pages/Authorisation/ForgotPassword';
 import ResetPassword from '../pages/Authorisation/ResetPassword';
+import ChangePassword from '../components/ChangePassword/ChangePassword'; // страница смены пароля (заглушка)
+import EditProfile from '../components/EditProfile/EditProfile'; // страница редактирования профиля
 
 import {
   MAIN_ROUTE,
@@ -29,25 +31,24 @@ import {
   REGISTER_ROUTE,
   FORGOT_PASSWORD_ROUTE,
   RESET_PASSWORD_ROUTE,
+  CHANGE_PASSWORD_ROUTE,
+  EDIT_PROFILE_ROUTE,
 } from './const.js';
 
-const ProtectedRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+// Проверка авторизации (используем localStorage)
+const isAuthenticated = () => localStorage.getItem('isAuthenticated') === 'true';
 
-  if (!isAuthenticated) {
+const ProtectedRoute = ({ children }) => {
+  if (!isAuthenticated()) {
     return <Navigate to={LOGIN_ROUTE} replace />;
   }
-
   return children;
 };
 
 const PublicRoute = ({ children }) => {
-  const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
-
-  if (isAuthenticated) {
+  if (isAuthenticated()) {
     return <Navigate to={MAIN_ROUTE} replace />;
   }
-
   return children;
 };
 
@@ -56,6 +57,7 @@ const AppRoutes = () => {
 
   return (
     <Routes location={location}>
+      {/* Публичные маршруты (доступны без авторизации) */}
       <Route
         path={LOGIN_ROUTE}
         element={
@@ -98,6 +100,7 @@ const AppRoutes = () => {
       />
       <Route path={NO_PAGE_ROUTE} element={<NoPage />} />
 
+      {/* Защищенные маршруты (только для авторизованных) */}
       <Route
         path={MAIN_ROUTE}
         element={
@@ -155,16 +158,33 @@ const AppRoutes = () => {
         }
       />
 
+      {/* Страница смены пароля */}
       <Route
-        path="/"
+        path={CHANGE_PASSWORD_ROUTE}
         element={
-          <Navigate
-            to={localStorage.getItem('isAuthenticated') === 'true' ? MAIN_ROUTE : LOGIN_ROUTE}
-            replace
-          />
+          <ProtectedRoute>
+            <ChangePassword />
+          </ProtectedRoute>
         }
       />
 
+      {/* Страница редактирования профиля */}
+      <Route
+        path={EDIT_PROFILE_ROUTE}
+        element={
+          <ProtectedRoute>
+            <EditProfile />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Перенаправление корневого пути */}
+      <Route
+        path="/"
+        element={<Navigate to={isAuthenticated() ? MAIN_ROUTE : LOGIN_ROUTE} replace />}
+      />
+
+      {/* Перенаправление для неизвестных маршрутов */}
       <Route path="*" element={<Navigate to={NO_PAGE_ROUTE} replace />} />
     </Routes>
   );

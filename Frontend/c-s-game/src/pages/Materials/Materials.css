@@ -36,11 +36,9 @@
   border-radius: 12px;
   padding: 25px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #eaeaea;
   transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   min-height: fit-content;
 }
 
@@ -84,7 +82,6 @@
   align-items: flex-start;
   margin-bottom: 15px;
   padding-bottom: 15px;
-  border-bottom: 2px solid #f0f0f0;
   min-height: 60px;
 }
 
@@ -120,7 +117,6 @@
 .material-footer {
   margin-top: auto;
   padding-top: 15px;
-  border-top: 1px solid #f0f0f0;
   min-height: 100px;
 }
 

@@ -58,9 +58,15 @@
 }
 
 @keyframes pulse {
-  0% { opacity: 1; }
-  50% { opacity: 0.7; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .test-header h1 {
@@ -240,7 +246,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .questions-container {
@@ -337,7 +345,7 @@
   background: #f0f4ff;
 }
 
-.option-item input[type="radio"] {
+.option-item input[type='radio'] {
   margin-top: 3px;
   width: 20px;
   height: 20px;
@@ -651,41 +659,41 @@
   .test-header h1 {
     font-size: 2rem;
   }
-  
+
   .test-meta-info {
     grid-template-columns: 1fr;
   }
-  
+
   .timer {
     font-size: 1.2rem;
     padding: 8px 16px;
   }
-  
+
   .navigation-buttons {
     flex-direction: column;
     gap: 15px;
   }
-  
+
   .nav-btn {
     width: 100%;
     justify-content: center;
   }
-  
+
   .score-display {
     flex-direction: column;
     text-align: center;
     gap: 20px;
   }
-  
+
   .score-value {
     font-size: 2.5rem;
     justify-content: center;
   }
-  
+
   .results-actions {
     flex-direction: column;
   }
-  
+
   .action-btn {
     width: 100%;
     justify-content: center;
@@ -696,13 +704,13 @@
   .test-details-page {
     padding: 10px;
   }
-  
+
   .test-header,
   .questions-navigation,
   .questions-container {
     padding: 20px;
   }
-  
+
   .question-dot {
     width: 35px;
     height: 35px;

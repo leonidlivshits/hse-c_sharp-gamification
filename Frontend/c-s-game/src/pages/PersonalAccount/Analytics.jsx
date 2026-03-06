@@ -213,15 +213,6 @@ const Analytics = () => {
           </div>
         </div>
       )}
-
-      <div className="analytics-footer">
-        <button className="export-btn" onClick={() => alert('Экспорт данных...')}>
-          Экспорт данных в PDF
-        </button>
-        <button className="share-btn" onClick={() => alert('Поделиться...')}>
-          Поделиться результатами
-        </button>
-      </div>
     </div>
   );
 };

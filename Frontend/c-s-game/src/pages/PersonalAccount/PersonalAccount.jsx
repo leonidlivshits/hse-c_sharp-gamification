@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom';
 import './PersonalAccount.css';
 
 const PersonalAccount = () => {
-  const [userData] = useState({
-    username: 'Дмитрий Иванов',
+  // Читаем имя из localStorage (если сохранено), иначе дефолтное
+  const [userName] = useState(localStorage.getItem('userName') || 'Дмитрий Иванов');
+
+  // Остальные данные пока статичны
+  const userData = {
     login: 'dmitry_ivanov',
     registrationDate: '2024-01-15',
-  });
+  };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -31,7 +34,7 @@ const PersonalAccount = () => {
             <div className="user-avatar-section">
               <div className="user-avatar-large">Д</div>
               <div className="user-name-display">
-                <h2>{userData.username}</h2>
+                <h2>{userName}</h2>
                 <span className="user-status">Ученик</span>
               </div>
             </div>
@@ -39,7 +42,7 @@ const PersonalAccount = () => {
             <div className="user-details">
               <div className="detail-item">
                 <div className="detail-label">Имя пользователя:</div>
-                <div className="detail-value">{userData.username}</div>
+                <div className="detail-value">{userName}</div>
               </div>
 
               <div className="detail-item">
@@ -48,8 +51,6 @@ const PersonalAccount = () => {
                   <span className="login-value">@{userData.login}</span>
                 </div>
               </div>
-
-              {/* Блок с паролем полностью удалён */}
 
               <div className="detail-item">
                 <div className="detail-label">Дата регистрации:</div>
@@ -60,9 +61,12 @@ const PersonalAccount = () => {
             </div>
 
             <div className="account-actions">
-              <button className="action-btn primary-btn">Редактировать профиль</button>
-              <button className="action-btn secondary-btn">Сменить пароль</button>
-              {/* Кнопка экспорта данных удалена */}
+              <Link to="/edit-profile" className="action-btn primary-btn">
+                Редактировать профиль
+              </Link>
+              <Link to="/change-password" className="action-btn secondary-btn">
+                Сменить пароль
+              </Link>
             </div>
           </div>
 

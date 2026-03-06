@@ -12,3 +12,5 @@ export const REGISTER_ROUTE = '/register';
 export const LOGIN_ROUTE = '/login';
 export const FORGOT_PASSWORD_ROUTE = '/forgot-password';
 export const RESET_PASSWORD_ROUTE = '/reset-password';
+export const CHANGE_PASSWORD_ROUTE = '/change-password';
+export const EDIT_PROFILE_ROUTE = '/edit-profile';

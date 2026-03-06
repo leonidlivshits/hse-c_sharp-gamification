@@ -294,32 +294,18 @@ const Tests = () => {
                       <span className="stat-value">{test.timeLimit} мин.</span>
                     </div>
                   )}
-                </div>
-
-                {test.status === 'completed' && (
-                  <div className="test-results">
-                    <div className="score-display">
-                      <span className="score-label">Ваш результат:</span>
-                      <span className="score-value">
+                  {test.status === 'completed' && (
+                    <div className="stat-detail">
+                      <span className="stat-label">Результат:</span>
+                      <span className="stat-value">
                         {test.userScore}/{test.maxScore}
                         <span className="score-percentage">
                           ({Math.round((test.userScore / test.maxScore) * 100)}%)
                         </span>
                       </span>
                     </div>
-
-                    <div className="related-materials">
-                      <h4>Связанные материалы:</h4>
-                      <div className="materials-list">
-                        {test.relatedMaterials.map((material) => (
-                          <Link key={material.id} to={material.link} className="material-link">
-                            {material.title}
-                          </Link>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
 
               <div className="test-footer">
