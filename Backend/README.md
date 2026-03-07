@@ -2,7 +2,6 @@
 
 This directory contains a minimal FastAPI async backend skeleton (Postgres + Redis).
 
-
 How to run:
 1. Copy environment:
    cp .env.example .env
