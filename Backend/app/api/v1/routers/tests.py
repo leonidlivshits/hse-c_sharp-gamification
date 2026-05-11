@@ -416,6 +416,9 @@ async def start_test_attempt(
     current_user: User = Depends(get_current_user),
 ):
     test = await get_visible_test(db, test_id, current_user)
+    quota_test_id = int(test.id)
+    quota_max_attempts = int(test.max_attempts or 1)
+    quota_deadline = test.deadline
     active_attempt_before = await test_attempt_repo.get_active_attempt(db, current_user.id, test_id)
     try:
         attempt = await resolve_attempt_for_user(db, test, current_user.id)
@@ -423,7 +426,9 @@ async def start_test_attempt(
         action = "resumed" if active_attempt_before is not None and active_attempt_before.id == attempt.id else "started"
         quota = await build_attempt_quota_payload(
             db,
-            test=test,
+            test_id=quota_test_id,
+            max_attempts=quota_max_attempts,
+            deadline=quota_deadline,
             user_id=current_user.id,
         )
         payload = {
@@ -447,7 +452,9 @@ async def start_test_attempt(
         block_reason = resolve_block_reason_from_policy_error(exc)
         quota = await build_attempt_quota_payload(
             db,
-            test=test,
+            test_id=quota_test_id,
+            max_attempts=quota_max_attempts,
+            deadline=quota_deadline,
             user_id=current_user.id,
             forced_block_reason=block_reason,
         )
@@ -472,7 +479,9 @@ async def start_test_attempt(
         # conflict races with read-after-rollback recovery.
         quota = await build_attempt_quota_payload(
             db,
-            test=test,
+            test_id=quota_test_id,
+            max_attempts=quota_max_attempts,
+            deadline=quota_deadline,
             user_id=current_user.id,
         )
         return JSONResponse(
@@ -512,7 +521,9 @@ async def get_my_test_attempt_quota(
     test = await get_visible_test(db, test_id, current_user)
     return await build_attempt_quota_payload(
         db,
-        test=test,
+        test_id=int(test.id),
+        max_attempts=int(test.max_attempts or 1),
+        deadline=test.deadline,
         user_id=current_user.id,
     )
 

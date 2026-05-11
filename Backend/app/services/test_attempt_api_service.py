@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -22,21 +23,23 @@ def resolve_block_reason_from_policy_error(exc: Exception) -> AttemptBlockReason
 async def build_attempt_quota_payload(
     db: AsyncSession,
     *,
-    test,
+    test_id: int,
+    max_attempts: int,
+    deadline: datetime | None,
     user_id: int,
     forced_block_reason: AttemptBlockReason | None = None,
 ) -> TestAttemptQuotaRead:
-    completed_attempts = await test_attempt_repo.count_completed_attempts_for_user_test(db, user_id, test.id)
-    active_attempt = await test_attempt_repo.get_active_attempt(db, user_id, test.id)
+    completed_attempts = await test_attempt_repo.count_completed_attempts_for_user_test(db, user_id, test_id)
+    active_attempt = await test_attempt_repo.get_active_attempt(db, user_id, test_id)
     attempt_state = build_attempt_view_state(
-        max_attempts=test.max_attempts,
+        max_attempts=max_attempts,
         completed_attempts=completed_attempts,
         has_active_attempt=active_attempt is not None,
-        deadline_passed=is_deadline_passed(test.deadline),
+        deadline_passed=is_deadline_passed(deadline),
         forced_block_reason=forced_block_reason,
     )
     return TestAttemptQuotaRead(
-        test_id=test.id,
+        test_id=test_id,
         max_attempts=attempt_state["max_attempts"],
         completed_attempts=attempt_state["completed_attempts"],
         remaining_attempts=attempt_state["remaining_attempts"],
