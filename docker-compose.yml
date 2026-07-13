@@ -29,6 +29,8 @@ services:
       dockerfile: docker/app.Dockerfile
     env_file:
       - ./Backend/.env
+    environment:
+      BACKGROUND_TASKS_BACKEND: celery
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,6 +51,8 @@ services:
       dockerfile: docker/app.Dockerfile
     env_file:
       - ./Backend/.env
+    environment:
+      BACKGROUND_TASKS_BACKEND: celery
     depends_on:
       postgres:
         condition: service_healthy
@@ -58,7 +62,7 @@ services:
         condition: service_healthy
     volumes:
       - ./Backend:/app
-    command: ["python", "-u", "-m", "app.tasks.worker"]
+    command: ["celery", "-A", "app.tasks.celery_app.celery_app", "worker", "--loglevel=INFO", "-Q", "grading,answers,ai,analytics"]
 
   frontend:
     build:

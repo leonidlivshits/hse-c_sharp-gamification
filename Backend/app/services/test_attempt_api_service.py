@@ -7,10 +7,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import add_post_commit_task
 from app.cache.redis_cache import get_redis_client
+from app.core.config import settings
 from app.core.test_attempts import AttemptBlockReason, build_attempt_view_state, is_deadline_passed
 from app.repositories import test_attempt_repo
 from app.schemas.test_attempt import TestAttemptQuotaRead, TestAttemptStateRead
 from app.services.test_runtime import utcnow
+from app.tasks.task_queue import enqueue_answers_postprocess
 
 
 def resolve_block_reason_from_policy_error(exc: Exception) -> AttemptBlockReason | None:
@@ -97,15 +99,24 @@ def schedule_attempt_completion_postprocess(
 ) -> None:
     async def enqueue_after_commit() -> None:
         try:
-            redis = get_redis_client()
-            payload = {
-                "job_type": "attempt_complete",
-                "user_id": int(user_id),
-                "test_id": int(test_id),
-                "attempt_id": int(attempt_id),
-                "source_event": "attempt_completed",
-            }
-            await redis.rpush("answers:postprocess", json.dumps(payload))
+            if settings.get_background_tasks_backend() != "celery":
+                redis = get_redis_client()
+                payload = {
+                    "job_type": "attempt_complete",
+                    "user_id": int(user_id),
+                    "test_id": int(test_id),
+                    "attempt_id": int(attempt_id),
+                    "source_event": "attempt_completed",
+                }
+                await redis.rpush("answers:postprocess", json.dumps(payload))
+                return
+            await enqueue_answers_postprocess(
+                user_id=int(user_id),
+                test_id=int(test_id),
+                attempt_id=int(attempt_id),
+                job_type="attempt_complete",
+                source_event="attempt_completed",
+            )
         except Exception:
             # Queue failures must not break successful submit responses.
             pass

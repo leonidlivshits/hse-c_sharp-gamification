@@ -35,6 +35,7 @@ from app.services.ai_service import (
     ensure_ai_gamification_ready,
     generate_gamification_draft,
 )
+from app.tasks.task_queue import enqueue_ai_gamification_job
 
 
 logger = logging.getLogger(__name__)
@@ -112,8 +113,11 @@ async def _bump_ai_metric(metric_name: str, increment: int = 1) -> None:
 
 
 async def enqueue_ai_job(job_id: int) -> None:
-    redis = get_redis_client()
-    await redis.rpush(AI_GAMIFY_QUEUE, json.dumps({"job_id": int(job_id)}))
+    if settings.get_background_tasks_backend() != "celery":
+        redis = get_redis_client()
+        await redis.rpush(AI_GAMIFY_QUEUE, json.dumps({"job_id": int(job_id)}))
+        return
+    await enqueue_ai_gamification_job(int(job_id))
 
 
 def _render_draft_text(draft: AIGamifyDraft) -> str:

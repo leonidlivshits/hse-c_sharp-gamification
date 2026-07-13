@@ -62,6 +62,15 @@ class Settings(BaseSettings):
     redis_url: str = Field("redis://redis:6379/0")
     redis_port: int = Field(6379)
 
+    # Background tasks
+    background_tasks_backend: str = Field("redis")  # redis | celery
+    celery_broker_url: str | None = None
+    celery_result_backend: str | None = None
+    celery_task_soft_time_limit_seconds: int = Field(120)
+    celery_task_time_limit_seconds: int = Field(180)
+    celery_task_max_retries: int = Field(5)
+    celery_worker_concurrency: int = Field(4)
+
     # CORS
     cors_allow_origins: str = Field(
         "http://localhost:3002,http://127.0.0.1:3002,http://localhost:8080,http://127.0.0.1:8080",
@@ -148,6 +157,16 @@ class Settings(BaseSettings):
 
     def get_monitoring_metrics_token(self) -> str:
         return (self.monitoring_metrics_token or "").strip()
+
+    def get_background_tasks_backend(self) -> str:
+        value = (self.background_tasks_backend or "redis").strip().lower()
+        return value if value in {"redis", "celery"} else "redis"
+
+    def get_celery_broker_url(self) -> str:
+        return (self.celery_broker_url or self.redis_url).strip()
+
+    def get_celery_result_backend(self) -> str:
+        return (self.celery_result_backend or self.redis_url).strip()
 
     def get_admin_session_same_site(self) -> str:
         if self.app_env.lower() == "production":
