@@ -22,6 +22,11 @@ from app.main import app
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "sqlite+aiosqlite:///:memory:")
 
 
+@pytest.fixture(autouse=True)
+def default_test_background_tasks_backend(monkeypatch: pytest.MonkeyPatch):
+    monkeypatch.setattr(settings, "background_tasks_backend", "redis")
+
+
 @pytest.fixture(scope="session")
 async def async_engine() -> AsyncEngine:
     engine = create_async_engine(TEST_DATABASE_URL, future=True, echo=False)

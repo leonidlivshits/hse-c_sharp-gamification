@@ -5,6 +5,7 @@ asyncpg
 pydantic
 pydantic-settings
 redis
+celery
 alembic
 pytest
 pytest-asyncio

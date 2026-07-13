@@ -8,7 +8,6 @@ Orchestration service for answers:
 """
 import logging
 from datetime import UTC, datetime
-import json
 from typing import Optional
 
 from sqlalchemy import select
@@ -21,6 +20,7 @@ from app.models.choice import Choice
 from app.models.question import Question
 from app.cache.redis_cache import NS_LEADERBOARD, NS_TEST_SUMMARY, bump_cache_namespace, get_redis_client
 from app.services.challenge_service import ChallengeEventType, record_event
+from app.tasks.task_queue import enqueue_open_answer_grading
 
 logger = logging.getLogger(__name__)
 
@@ -157,9 +157,7 @@ async def submit_answer(
     if should_enqueue_open_grading:
         async def enqueue_open_grading_after_commit() -> None:
             try:
-                r = get_redis_client()
-                job = {"answer_id": ans.id, "user_id": user_id}
-                await r.rpush("grading:open", json.dumps(job))
+                await enqueue_open_answer_grading(answer_id=int(ans.id), user_id=int(user_id))
             except Exception:
                 logger.exception("Failed to enqueue open-answer grading job", extra={"answer_id": ans.id})
 
@@ -372,10 +370,8 @@ async def submit_answers_batch_for_attempt(
 
         async def enqueue_open_grading_after_commit() -> None:
             try:
-                r = get_redis_client()
                 for answer_id in queued_answer_ids:
-                    job = {"answer_id": answer_id, "user_id": user_id}
-                    await r.rpush("grading:open", json.dumps(job))
+                    await enqueue_open_answer_grading(answer_id=int(answer_id), user_id=int(user_id))
             except Exception:
                 logger.exception(
                     "Failed to enqueue open-answer grading jobs",
