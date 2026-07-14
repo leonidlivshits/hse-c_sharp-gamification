@@ -169,6 +169,7 @@ async def process_answer_postprocess(job_payload: str, *, raise_errors: bool = F
     test_id = data.get("test_id")
     attempt_id = data.get("attempt_id")
     points_delta = float(data.get("points_delta") or 0.0)
+    answers_count = int(data.get("answers_count") or 0)
     mark_active = bool(data.get("mark_active"))
 
     if user_id is None:
@@ -186,6 +187,37 @@ async def process_answer_postprocess(job_payload: str, *, raise_errors: bool = F
     async with AsyncSessionLocal() as session:
         try:
             if job_type == "attempt_complete":
+                if points_delta != 0.0 or answers_count > 0 or mark_active:
+                    await analytics_repo.create_or_update_analytics(
+                        session,
+                        user_id=int(user_id),
+                        points_delta=points_delta,
+                        mark_active=True,
+                        reason_code="attempt_batch_submit",
+                        source_type="test_attempt",
+                        source_id=int(attempt_id) if attempt_id is not None else None,
+                        idempotency_key=f"attempt_batch_submit:{attempt_id}" if attempt_id is not None else None,
+                        metadata={
+                            "test_id": int(test_id) if test_id is not None else None,
+                            "attempt_id": int(attempt_id) if attempt_id is not None else None,
+                            "answers_count": answers_count,
+                        },
+                        award_achievements=False,
+                        sync_rewards=False,
+                    )
+                if answers_count > 0:
+                    await record_event(
+                        session,
+                        user_id=int(user_id),
+                        event_type=ChallengeEventType.ANSWER_SUBMITTED,
+                        increment=answers_count,
+                    )
+                    await record_event(
+                        session,
+                        user_id=int(user_id),
+                        event_type=ChallengeEventType.STREAK_DAY,
+                        increment=answers_count,
+                    )
                 await reward_service.sync_user_rewards(session, int(user_id))
                 await record_event(
                     session,

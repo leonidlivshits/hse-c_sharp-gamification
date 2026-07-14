@@ -151,7 +151,11 @@ async def test_process_answer_postprocess_attempt_complete_runs_deferred_side_ef
 async def test_process_answer_postprocess_attempt_complete_is_idempotent(monkeypatch):
     fake_session = _FakeAsyncSessionCtx(answer=None)
     fake_redis = _FakeIdempotencyRedis()
-    calls = {"rewards_sync": 0, "events": [], "cache": 0}
+    calls = {"analytics": [], "rewards_sync": 0, "events": [], "cache": 0}
+
+    async def _fake_create_or_update_analytics(session, **kwargs):
+        assert session is fake_session
+        calls["analytics"].append(kwargs)
 
     async def _fake_sync_user_rewards(session, user_id: int):
         assert session is fake_session
@@ -170,16 +174,31 @@ async def test_process_answer_postprocess_attempt_complete_is_idempotent(monkeyp
 
     monkeypatch.setattr(worker, "get_redis_client", lambda: fake_redis)
     monkeypatch.setattr(worker, "AsyncSessionLocal", lambda: fake_session)
+    monkeypatch.setattr(worker.analytics_repo, "create_or_update_analytics", _fake_create_or_update_analytics)
     monkeypatch.setattr(worker.reward_service, "sync_user_rewards", _fake_sync_user_rewards)
     monkeypatch.setattr(worker, "record_event", _fake_record_event)
     monkeypatch.setattr(worker, "bump_cache_namespace", _fake_bump_cache_namespace)
 
-    payload = json.dumps({"job_type": "attempt_complete", "user_id": 17, "attempt_id": 99})
+    payload = json.dumps(
+        {
+            "job_type": "attempt_complete",
+            "user_id": 17,
+            "test_id": 23,
+            "attempt_id": 99,
+            "points_delta": 4.5,
+            "answers_count": 2,
+        }
+    )
     await worker.process_answer_postprocess(payload)
     await worker.process_answer_postprocess(payload)
 
     assert fake_session.commits == 1
+    assert len(calls["analytics"]) == 1
+    assert calls["analytics"][0]["points_delta"] == pytest.approx(4.5)
+    assert calls["analytics"][0]["idempotency_key"] == "attempt_batch_submit:99"
     assert calls["rewards_sync"] == 1
+    assert calls["events"].count(("answer_submitted", 2)) == 1
     assert calls["events"].count(("attempt_completed", 1)) == 1
+    assert calls["events"].count(("streak_day", 2)) == 1
     assert calls["events"].count(("streak_day", 1)) == 1
     assert calls["cache"] == 1

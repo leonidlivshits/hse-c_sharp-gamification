@@ -7,6 +7,7 @@ Orchestration service for answers:
 - queue open-answer jobs for manual grading
 """
 import logging
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from typing import Optional
 
@@ -23,6 +24,14 @@ from app.services.challenge_service import ChallengeEventType, record_event
 from app.tasks.task_queue import enqueue_open_answer_grading
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class AnswerBatchSubmitResult:
+    answers_count: int
+    points_delta: float
+    open_answers_count: int
+
 
 async def submit_answer(
     session,
@@ -173,13 +182,14 @@ async def submit_answers_batch_for_attempt(
     test_id: int,
     attempt_id: int,
     answers: list[tuple[int, str]],
-) -> None:
+) -> AnswerBatchSubmitResult:
     """
     Optimized batch submit for attempt payloads.
-    Processes answers in-memory with one prefetch pass and runs heavy side effects once.
+    Processes answers in-memory with one prefetch pass.
+    Secondary analytics/challenge effects are scheduled by the caller after commit.
     """
     if not answers:
-        return
+        return AnswerBatchSubmitResult(answers_count=0, points_delta=0.0, open_answers_count=0)
 
     question_ids = [int(question_id) for question_id, _ in answers]
     unique_question_ids = list(dict.fromkeys(question_ids))
@@ -327,36 +337,6 @@ async def submit_answers_batch_for_attempt(
 
     await session.flush()
 
-    await analytics_repo.create_or_update_analytics(
-        session,
-        user_id=user_id,
-        points_delta=total_points_delta,
-        mark_active=True,
-        reason_code="attempt_batch_submit",
-        source_type="test_attempt",
-        source_id=attempt_id,
-        metadata={
-            "test_id": test_id,
-            "attempt_id": attempt_id,
-            "answers_count": submitted_answers_count,
-        },
-        award_achievements=False,
-        sync_rewards=False,
-    )
-
-    await record_event(
-        session,
-        user_id=user_id,
-        event_type=ChallengeEventType.ANSWER_SUBMITTED,
-        increment=submitted_answers_count,
-    )
-    await record_event(
-        session,
-        user_id=user_id,
-        event_type=ChallengeEventType.STREAK_DAY,
-        increment=submitted_answers_count,
-    )
-
     async def invalidate_after_commit() -> None:
         try:
             await bump_cache_namespace(NS_LEADERBOARD, NS_TEST_SUMMARY)
@@ -379,6 +359,12 @@ async def submit_answers_batch_for_attempt(
                 )
 
         add_post_commit_task(session, enqueue_open_grading_after_commit)
+
+    return AnswerBatchSubmitResult(
+        answers_count=submitted_answers_count,
+        points_delta=total_points_delta,
+        open_answers_count=len(open_answers_to_queue),
+    )
 
 
 async def manual_grade_open_answer(session, answer_id: int, grader_id: int, score: float) -> Answer:

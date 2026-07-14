@@ -28,6 +28,7 @@ from app.db.session import Base, engine
 from app.health.endpoints import router as health_router
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_metrics import RequestMetricsMiddleware
+from app.observability.prometheus_router import router as prometheus_router
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +94,7 @@ def create_app() -> FastAPI:
         app.add_middleware(RequestMetricsMiddleware)
 
     app.include_router(health_router, prefix="/health", tags=["health"])
+    app.include_router(prometheus_router, tags=["metrics"])
     app.include_router(users.router, prefix="/api/v1/users", tags=["users"])
     app.include_router(materials.router, prefix="/api/v1/materials", tags=["materials"])
     app.include_router(tests.router, prefix="/api/v1/tests", tags=["tests"])

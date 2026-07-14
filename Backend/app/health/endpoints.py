@@ -3,27 +3,11 @@ from fastapi import APIRouter, Header, HTTPException, status
 from sqlalchemy import text
 
 from app.cache.redis_cache import get_redis_client
-from app.core.config import settings
 from app.db.session import engine
+from app.observability.metrics_access import ensure_metrics_access
 from app.observability.request_metrics import request_metrics
 
 router = APIRouter()
-
-
-def _ensure_metrics_access(x_metrics_token: str | None) -> None:
-    expected_token = settings.get_monitoring_metrics_token()
-    if not expected_token:
-        if settings.app_env.lower() == "test":
-            return
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Metrics token is not configured",
-        )
-    if x_metrics_token != expected_token:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Metrics access denied",
-        )
 
 
 @router.get("/live")
@@ -48,6 +32,9 @@ async def readiness():
 
 
 @router.get("/metrics")
-async def metrics(x_metrics_token: str | None = Header(default=None, alias="X-Metrics-Token")):
-    _ensure_metrics_access(x_metrics_token)
+async def metrics(
+    x_metrics_token: str | None = Header(default=None, alias="X-Metrics-Token"),
+    authorization: str | None = Header(default=None, alias="Authorization"),
+):
+    ensure_metrics_access(x_metrics_token=x_metrics_token, authorization=authorization)
     return request_metrics.snapshot()

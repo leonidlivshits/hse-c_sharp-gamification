@@ -6,6 +6,7 @@ pydantic
 pydantic-settings
 redis
 celery
+prometheus-client
 alembic
 pytest
 pytest-asyncio
