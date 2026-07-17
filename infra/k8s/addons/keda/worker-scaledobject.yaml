@@ -1,0 +1,36 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: worker-redis-queues
+  namespace: hse-csharp-gamification
+  labels:
+    app.kubernetes.io/name: worker
+    app.kubernetes.io/part-of: hse-csharp-gamification
+spec:
+  scaleTargetRef:
+    name: worker
+  pollingInterval: 15
+  cooldownPeriod: 120
+  minReplicaCount: 1
+  maxReplicaCount: 6
+  triggers:
+    - type: redis
+      metadata:
+        address: redis:6379
+        listName: answers
+        listLength: "10"
+    - type: redis
+      metadata:
+        address: redis:6379
+        listName: grading
+        listLength: "10"
+    - type: redis
+      metadata:
+        address: redis:6379
+        listName: ai
+        listLength: "5"
+    - type: redis
+      metadata:
+        address: redis:6379
+        listName: analytics
+        listLength: "20"

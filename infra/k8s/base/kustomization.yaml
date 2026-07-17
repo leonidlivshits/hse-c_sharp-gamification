@@ -10,6 +10,8 @@ resources:
   - backend-migration-job.yaml
   - backend.yaml
   - worker.yaml
+  - hpa.yaml
+  - pdb.yaml
   - frontend.yaml
   - nginx-configmap.yaml
   - nginx.yaml
