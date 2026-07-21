@@ -1,6 +1,8 @@
 import pytest
 pytestmark = pytest.mark.asyncio
 
+from sqlalchemy import select
+
 from app.repositories import analytics_repo
 from app.repositories import question_repo
 from app.models.user import User
@@ -10,7 +12,7 @@ from app.models.choice import Choice
 from app.models.answer import Answer
 from app.repositories.test_attempt_repo import create_attempt, complete_attempt
 from app.schemas.question import QuestionRead
-from app.services.answer_service import submit_answer, manual_grade_open_answer
+from app.services.answer_service import manual_grade_open_answer, submit_answer, submit_answers_batch_for_attempt
 
 @pytest.mark.asyncio
 async def test_submit_mcq_full_flow(db):
@@ -302,3 +304,63 @@ async def test_submit_answer_treats_null_closed_answer_as_skipped(db):
     )
 
     assert answer.score == pytest.approx(0.0)
+
+
+@pytest.mark.asyncio
+async def test_submit_answers_batch_keeps_secondary_effects_out_of_sync_path(db, monkeypatch):
+    from app.services import answer_service as answer_service_module
+
+    async def fail_create_or_update_analytics(*_args, **_kwargs):
+        raise AssertionError("batch submit must not update analytics synchronously")
+
+    async def fail_record_event(*_args, **_kwargs):
+        raise AssertionError("batch submit must not update challenges synchronously")
+
+    monkeypatch.setattr(
+        answer_service_module.analytics_repo,
+        "create_or_update_analytics",
+        fail_create_or_update_analytics,
+    )
+    monkeypatch.setattr(answer_service_module, "record_event", fail_record_event)
+
+    user = User(username="batch_fast_path_user", password_hash="x")
+    test = TestModel(title="batch fast path")
+    db.add_all([user, test])
+    await db.flush()
+
+    question = Question(test_id=test.id, text="Pick answer", points=5.0, is_open_answer=False)
+    db.add(question)
+    await db.flush()
+
+    choice = Choice(question_id=question.id, value="A", ordinal=1, is_correct=True)
+    db.add(choice)
+    await db.flush()
+
+    attempt = await create_attempt(db, user.id, test.id)
+
+    result = await submit_answers_batch_for_attempt(
+        db,
+        user_id=user.id,
+        test_id=test.id,
+        attempt_id=attempt.id,
+        answers=[(question.id, str(choice.id))],
+    )
+
+    stored_answer = (
+        await db.execute(
+            select(Answer).where(
+                Answer.user_id == user.id,
+                Answer.test_id == test.id,
+                Answer.attempt_id == attempt.id,
+                Answer.question_id == question.id,
+            )
+        )
+    ).scalars().first()
+    analytics = await analytics_repo.get_user_analytics(db, user.id)
+
+    assert result.answers_count == 1
+    assert result.points_delta == pytest.approx(5.0)
+    assert result.open_answers_count == 0
+    assert stored_answer is not None
+    assert stored_answer.score == pytest.approx(5.0)
+    assert analytics is None

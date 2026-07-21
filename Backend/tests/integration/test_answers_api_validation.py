@@ -268,3 +268,5 @@ async def test_submit_attempt_enqueues_attempt_complete_postprocess_job(client, 
     assert int(last_payload["user_id"]) == int(student.id)
     assert int(last_payload["test_id"]) == int(created_test["id"])
     assert int(last_payload["attempt_id"]) == int(attempt["id"])
+    assert int(last_payload["answers_count"]) == 1
+    assert float(last_payload["points_delta"]) == 2.0

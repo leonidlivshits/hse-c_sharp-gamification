@@ -581,7 +581,7 @@ async def submit_test_attempt(
         return attempt
 
     try:
-        await submit_answers_batch_for_attempt(
+        batch_result = await submit_answers_batch_for_attempt(
             db,
             user_id=attempt.user_id,
             test_id=attempt.test_id,
@@ -611,6 +611,8 @@ async def submit_test_attempt(
         user_id=completed_attempt.user_id,
         test_id=completed_attempt.test_id,
         attempt_id=completed_attempt.id,
+        points_delta=batch_result.points_delta,
+        answers_count=batch_result.answers_count,
     )
     return completed_attempt
 

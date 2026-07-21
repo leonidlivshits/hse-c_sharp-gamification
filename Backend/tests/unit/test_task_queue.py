@@ -40,6 +40,7 @@ async def test_enqueue_answers_postprocess_uses_celery_backend(monkeypatch):
                 "test_id": 11,
                 "attempt_id": 13,
                 "points_delta": 0.0,
+                "answers_count": 0,
                 "mark_active": False,
                 "source_event": "attempt_completed",
             },

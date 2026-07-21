@@ -31,6 +31,7 @@ services:
       - ./Backend/.env
     environment:
       BACKGROUND_TASKS_BACKEND: celery
+      MONITORING_METRICS_TOKEN: ${MONITORING_METRICS_TOKEN:-local-dev-metrics-token}
     depends_on:
       postgres:
         condition: service_healthy
@@ -53,6 +54,7 @@ services:
       - ./Backend/.env
     environment:
       BACKGROUND_TASKS_BACKEND: celery
+      MONITORING_METRICS_TOKEN: ${MONITORING_METRICS_TOKEN:-local-dev-metrics-token}
     depends_on:
       postgres:
         condition: service_healthy
@@ -86,6 +88,20 @@ services:
       - "${NGINX_PORT}:80"
     volumes:
       - ./infra/nginx/dev.conf:/etc/nginx/conf.d/default.conf:ro
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-lifecycle"
 
 volumes:
   pgdata:

@@ -45,6 +45,7 @@ async def enqueue_answers_postprocess(
     attempt_id: int | None = None,
     job_type: str = "answer",
     points_delta: float = 0.0,
+    answers_count: int = 0,
     mark_active: bool = False,
     source_event: str | None = None,
 ) -> None:
@@ -54,6 +55,7 @@ async def enqueue_answers_postprocess(
         "test_id": int(test_id) if test_id is not None else None,
         "attempt_id": int(attempt_id) if attempt_id is not None else None,
         "points_delta": float(points_delta or 0.0),
+        "answers_count": int(answers_count or 0),
         "mark_active": bool(mark_active),
     }
     if source_event is not None:

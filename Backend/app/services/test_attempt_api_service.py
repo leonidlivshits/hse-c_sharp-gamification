@@ -96,6 +96,8 @@ def schedule_attempt_completion_postprocess(
     user_id: int,
     test_id: int,
     attempt_id: int,
+    points_delta: float = 0.0,
+    answers_count: int = 0,
 ) -> None:
     async def enqueue_after_commit() -> None:
         try:
@@ -106,6 +108,8 @@ def schedule_attempt_completion_postprocess(
                     "user_id": int(user_id),
                     "test_id": int(test_id),
                     "attempt_id": int(attempt_id),
+                    "points_delta": float(points_delta or 0.0),
+                    "answers_count": int(answers_count or 0),
                     "source_event": "attempt_completed",
                 }
                 await redis.rpush("answers:postprocess", json.dumps(payload))
@@ -115,6 +119,8 @@ def schedule_attempt_completion_postprocess(
                 test_id=int(test_id),
                 attempt_id=int(attempt_id),
                 job_type="attempt_complete",
+                points_delta=float(points_delta or 0.0),
+                answers_count=int(answers_count or 0),
                 source_event="attempt_completed",
             )
         except Exception:
