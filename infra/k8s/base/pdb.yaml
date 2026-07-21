@@ -1,0 +1,41 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: backend
+  namespace: hse-csharp-gamification
+  labels:
+    app.kubernetes.io/name: backend
+    app.kubernetes.io/part-of: hse-csharp-gamification
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: backend
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: worker
+  namespace: hse-csharp-gamification
+  labels:
+    app.kubernetes.io/name: worker
+    app.kubernetes.io/part-of: hse-csharp-gamification
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: worker
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: nginx
+  namespace: hse-csharp-gamification
+  labels:
+    app.kubernetes.io/name: nginx
+    app.kubernetes.io/part-of: hse-csharp-gamification
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nginx

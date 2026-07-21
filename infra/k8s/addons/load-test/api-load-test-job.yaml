@@ -1,0 +1,88 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: api-load-test
+  namespace: hse-csharp-gamification
+  labels:
+    app.kubernetes.io/name: api-load-test
+    app.kubernetes.io/part-of: hse-csharp-gamification
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: api-load-test
+        app.kubernetes.io/part-of: hse-csharp-gamification
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: api-load-test
+          image: hse-c_sharp-gamification-backend:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - python
+            - -c
+            - |
+              import concurrent.futures
+              import statistics
+              import time
+              import urllib.request
+
+              url = "http://nginx/health/live"
+              duration_seconds = 60
+              concurrency = 25
+              deadline = time.time() + duration_seconds
+              latencies = []
+              errors = 0
+              total = 0
+
+              def hit():
+                  started = time.perf_counter()
+                  with urllib.request.urlopen(url, timeout=5) as response:
+                      response.read()
+                      if response.status >= 400:
+                          raise RuntimeError(f"status={response.status}")
+                  return time.perf_counter() - started
+
+              def worker():
+                  local_latencies = []
+                  local_errors = 0
+                  local_total = 0
+                  while time.time() < deadline:
+                      try:
+                          local_latencies.append(hit())
+                      except Exception:
+                          local_errors += 1
+                      finally:
+                          local_total += 1
+                  return local_total, local_errors, local_latencies
+
+              with concurrent.futures.ThreadPoolExecutor(max_workers=concurrency) as pool:
+                  for local_total, local_errors, local_latencies in pool.map(
+                      lambda _: worker(),
+                      range(concurrency),
+                  ):
+                      total += local_total
+                      errors += local_errors
+                      latencies.extend(local_latencies)
+
+              latencies.sort()
+
+              def percentile(value):
+                  if not latencies:
+                      return 0
+                  index = min(
+                      len(latencies) - 1,
+                      int(round((value / 100) * (len(latencies) - 1))),
+                  )
+                  return latencies[index]
+
+              print(f"url={url}")
+              print(f"duration_seconds={duration_seconds}")
+              print(f"concurrency={concurrency}")
+              print(f"requests={total}")
+              print(f"errors={errors}")
+              print(f"rps={total / duration_seconds:.2f}")
+              print(f"avg_ms={(statistics.mean(latencies) * 1000) if latencies else 0:.2f}")
+              print(f"p95_ms={percentile(95) * 1000:.2f}")
+              print(f"p99_ms={percentile(99) * 1000:.2f}")

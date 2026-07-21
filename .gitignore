@@ -208,3 +208,4 @@ __marimo__/
 
 /node_modules
 /Backend/docs
+/infra/k8s/base/secret.local.yaml

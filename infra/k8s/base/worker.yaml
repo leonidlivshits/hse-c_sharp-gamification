@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+  namespace: hse-csharp-gamification
+  labels:
+    app.kubernetes.io/name: worker
+    app.kubernetes.io/part-of: hse-csharp-gamification
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: worker
+        app.kubernetes.io/part-of: hse-csharp-gamification
+    spec:
+      containers:
+        - name: worker
+          image: hse-c_sharp-gamification-backend:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - celery
+            - -A
+            - app.tasks.celery_app.celery_app
+            - worker
+            - --loglevel=INFO
+            - -Q
+            - grading,answers,ai,analytics
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - python -c "import os, redis; redis.from_url(os.environ['CELERY_BROKER_URL']).ping()"
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - python -c "import os, redis; redis.from_url(os.environ['CELERY_BROKER_URL']).ping()"
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi

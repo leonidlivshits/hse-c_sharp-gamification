@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hse-csharp-gamification
+  labels:
+    app.kubernetes.io/name: hse-csharp-gamification
+    app.kubernetes.io/part-of: hse-csharp-gamification
